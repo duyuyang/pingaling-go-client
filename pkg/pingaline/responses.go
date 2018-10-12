@@ -29,5 +29,47 @@ type Health struct {
 }
 
 type HealthData struct {
-	Data []Health
+	Data []Health `json:"data"`
+}
+
+type Endpoint struct {
+	URL         string `json:"url"`
+	NextCheck   string `json:"next_check"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type EndpointData struct {
+	Data Endpoint `json:"data"`
+}
+
+type Incident struct {
+	URL         string `json:"url"`
+	UpdatedAt   string `json:"updated_at"`
+	Status      string `json:"status"`
+	NextAttempt string `json:"next_attempt"`
+	Name        string `json:"name"`
+	ID          int    `json:"id"`
+}
+
+type IncidentData struct {
+	Data []Incident `json:"data"`
+}
+
+type NotificationChannel struct {
+	UpdatedAt string `json:"updated_at"`
+	Type      string `json:"type"`
+	Name      string `json:"name"`
+}
+
+type NotificationChannelData struct {
+	Data []NotificationChannel `json:"data"`
+}
+
+type NotificationPolicy struct {
+	UpdatedAt string `json:"updated_at"`
+	Type      string `json:"type"`
+	Name      string `json:"name"`
+	Endpoint  string `json:"endpoint"`
+	Channel   string `json:"channel"`
 }
