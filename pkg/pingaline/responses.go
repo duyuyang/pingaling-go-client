@@ -12,10 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package pingaline
 
-import "github.com/spf13/pingaling/cmd"
+type createSessionResp struct {
+	RetMsg    string `json:"ret_msg"`
+	SessionID string `json:"session_id"`
+	Timestamp string `json:"timestamp"`
+}
 
-func main() {
-	cmd.Execute()
+type Health struct {
+	URL     string `json:"url"`
+	Updated string `json:"updated"`
+	Type    string `json:"type"`
+	Status  string `json:"status"`
+	Name    string `json:"name"`
+}
+
+type HealthData struct {
+	Data []Health
 }

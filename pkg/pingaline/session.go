@@ -12,10 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package pingaline
 
-import "github.com/spf13/pingaling/cmd"
+import (
+	"context"
+)
 
-func main() {
-	cmd.Execute()
+type Session struct {
+	parent    *Client
+	SessionID string
+}
+
+func (s *Session) url(endpoint string) string {
+	u := s.parent.urlBase(endpoint)
+	return u
+}
+
+// GetHealthStatus return Health check data
+func (s *Session) GetHealthStatus(ctx context.Context) (*HealthData, error) {
+	var r HealthData
+	if err := s.parent.doReqURL(ctx, s.url("health/summary"), &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
 }

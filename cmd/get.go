@@ -1,4 +1,4 @@
-// Copyright © 2018 Timothy Mukaibo <timothy.mukaibo@gmail.com>
+// Copyright © 2018 The Pingaling Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,35 +15,48 @@
 package cmd
 
 import (
-	"bitbucket.org/pingaling/pingaling-client/pkg/client"
-	"fmt"
+	"context"
+
 	"github.com/spf13/cobra"
+	pl "github.com/spf13/pingaling/pkg/pingaline"
 )
 
+// getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get",
-	Short: "Returns the health status for all resources",
-	Long: `The Get command returns the health status for all resources, ordered by name`,
+	Short: "Display one or many resources",
+	Long: `Prints a table of the most important information about the specified
+resources.`,
+	Example: `
+ # List all health status
+ pingaline get health
 
+ # List all incidents
+ pingaline get incidents
+`,
+}
+
+// healthCmd represents the health command
+var healthCmd = &cobra.Command{
+	Use:   "health",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		healthStatuses := client.HealthStatusSummary()
-		fmt.Println("NAME", "TYPE", "STATUS", "URL")
-		for _, hs := range healthStatuses {
-			fmt.Println(hs.Name, hs.Type, hs.Status, hs.Url)
+		ctx := context.Background()
+		h, err := session.GetHealthStatus(ctx)
+		if err != nil {
+			panic(err)
 		}
+		pl.TableHealth(h.Data)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(getCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// getCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// getCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	getCmd.AddCommand(healthCmd)
 }
