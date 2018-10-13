@@ -77,3 +77,7 @@ type NotificationPolicy struct {
 type NotificationPolicyData struct {
 	Data []NotificationPolicy `json:"data"`
 }
+
+type DeleteMsg struct {
+	Message string `json:"message"`
+}

@@ -34,7 +34,7 @@ func (s *Session) GetHealthStatus() (*HealthData, error) {
 	var r HealthData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.doReqURL(ctx, s.url("health/summary"), &r); err != nil {
+	if err := s.parent.Get(ctx, s.url("health/summary"), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -46,7 +46,7 @@ func (s *Session) GetEndpoints(epName string) (*EndpointData, error) {
 	var r EndpointData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.doReqURL(ctx, s.url("endpoints/"+epName), &r); err != nil {
+	if err := s.parent.Get(ctx, s.url("endpoints/"+epName), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -59,7 +59,7 @@ func (s *Session) GetIncidents() (*IncidentData, error) {
 	var r IncidentData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.doReqURL(ctx, s.url("incidents"), &r); err != nil {
+	if err := s.parent.Get(ctx, s.url("incidents"), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -72,7 +72,7 @@ func (s *Session) GetNotificationChannels() (*NotificationChannelData, error) {
 	var r NotificationChannelData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.doReqURL(ctx, s.url("notification_channels"), &r); err != nil {
+	if err := s.parent.Get(ctx, s.url("notification_channels"), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -85,7 +85,20 @@ func (s *Session) GetNotificationPolicies() (*NotificationPolicyData, error) {
 	var r NotificationPolicyData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.doReqURL(ctx, s.url("notification_policies"), &r); err != nil {
+	if err := s.parent.Get(ctx, s.url("notification_policies"), &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+
+}
+
+// DeleteEndpoint delete specific endpoint
+func (s *Session) DeleteEndpoint(name string) (*DeleteMsg, error) {
+
+	var r DeleteMsg
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := s.parent.Delete(ctx, s.url("endpoints/"+name), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
