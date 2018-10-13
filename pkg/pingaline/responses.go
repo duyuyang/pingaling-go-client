@@ -73,3 +73,7 @@ type NotificationPolicy struct {
 	Endpoint  string `json:"endpoint"`
 	Channel   string `json:"channel"`
 }
+
+type NotificationPolicyData struct {
+	Data []NotificationPolicy `json:"data"`
+}

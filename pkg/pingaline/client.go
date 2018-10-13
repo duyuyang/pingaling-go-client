@@ -54,7 +54,7 @@ func (e *ErrNotExpectedJSON) Error() string {
 }
 
 // CreateSession is a required for further API use.
-func (c *Client) CreateSession(ctx context.Context) (*Session, error) {
+func (c *Client) CreateSession() (*Session, error) {
 	var v createSessionResp
 	return &Session{
 		parent:    c,
@@ -79,7 +79,7 @@ func (c *Client) doReqURL(ctx context.Context, url string, jsonInto interface{})
 	if err != nil {
 		return err
 	}
-	//defer resp.Body.Close()
+
 	defer func() {
 		var maxCopySize int64
 		maxCopySize = 2 << 10

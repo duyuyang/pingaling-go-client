@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"os"
 
@@ -90,10 +89,8 @@ func initConfig() {
 	client := pl.Client{
 		BaseURL: clientCfg.(*pl.Config).GetServerURI(),
 	}
-	// Use context to time out function calls
-	ctx := context.Background()
 
 	// Use session to make functtion call
-	session, _ = client.CreateSession(ctx)
+	session, _ = client.CreateSession()
 
 }

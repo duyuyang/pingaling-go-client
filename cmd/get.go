@@ -15,12 +15,17 @@
 package cmd
 
 import (
-	"context"
-	"fmt"
+	"errors"
 
 	"github.com/spf13/cobra"
 	pl "github.com/spf13/pingaling/pkg/pingaline"
 )
+
+func checkError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
 
 // getCmd represents the get command
 var getCmd = &cobra.Command{
@@ -46,11 +51,8 @@ var healthCmd = &cobra.Command{
  pingaling get health
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		ctx := context.Background()
-		h, err := session.GetHealthStatus(ctx)
-		if err != nil {
-			panic(err)
-		}
+		h, err := session.GetHealthStatus()
+		checkError(err)
 		pl.TableHealth(h.Data)
 	},
 }
@@ -59,11 +61,20 @@ var healthCmd = &cobra.Command{
 var endpointCmd = &cobra.Command{
 	Use:   "endpoint",
 	Short: "List a specified endpoint",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("Requires one endpoint resource")
+		}
+		return nil
+	},
 	Example: `
   # Describe a endpoint
   pingaling get endpoint foo-bar`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("endpoint called")
+
+		ep, err := session.GetEndpoints(args[0])
+		checkError(err)
+		pl.TableEndpoints(ep.Data)
 	},
 }
 
@@ -76,7 +87,10 @@ var endpointsCmd = &cobra.Command{
 	pingaling get endpoints
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("endpoints called")
+		// Return health summary for now
+		h, err := session.GetHealthStatus()
+		checkError(err)
+		pl.TableHealth(h.Data)
 	},
 }
 
@@ -89,7 +103,9 @@ var incidentsCmd = &cobra.Command{
   pingaling get incidents`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("incidents called")
+		i, err := session.GetIncidents()
+		checkError(err)
+		pl.TableIncidents(i.Data)
 	},
 }
 
@@ -105,7 +121,9 @@ var notificationChannelsCmd = &cobra.Command{
  	`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("notification-channels called")
+		nc, err := session.GetNotificationChannels()
+		checkError(err)
+		pl.TableNotificationChannels(nc.Data)
 	},
 }
 
@@ -121,7 +139,9 @@ var notificationPoliciesCmd = &cobra.Command{
  	`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("notification-polices called")
+		nc, err := session.GetNotificationPolicies()
+		checkError(err)
+		pl.TableNotificationPolicies(nc.Data)
 	},
 }
 
