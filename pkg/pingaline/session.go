@@ -16,6 +16,7 @@ package pingaline
 
 import (
 	"context"
+	"time"
 )
 
 type Session struct {
@@ -29,10 +30,64 @@ func (s *Session) url(endpoint string) string {
 }
 
 // GetHealthStatus return Health check data
-func (s *Session) GetHealthStatus(ctx context.Context) (*HealthData, error) {
+func (s *Session) GetHealthStatus() (*HealthData, error) {
 	var r HealthData
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 	if err := s.parent.doReqURL(ctx, s.url("health/summary"), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
+}
+
+// GetEndpoints return specific endpoint data
+func (s *Session) GetEndpoints(epName string) (*EndpointData, error) {
+
+	var r EndpointData
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := s.parent.doReqURL(ctx, s.url("endpoints/"+epName), &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+
+}
+
+// GetIncidents return specific endpoint data
+func (s *Session) GetIncidents() (*IncidentData, error) {
+
+	var r IncidentData
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := s.parent.doReqURL(ctx, s.url("incidents"), &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+
+}
+
+// GetNotificationChannels return specific endpoint data
+func (s *Session) GetNotificationChannels() (*NotificationChannelData, error) {
+
+	var r NotificationChannelData
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := s.parent.doReqURL(ctx, s.url("notification_channels"), &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+
+}
+
+// GetNotificationPolicies return specific endpoint data
+func (s *Session) GetNotificationPolicies() (*NotificationPolicyData, error) {
+
+	var r NotificationPolicyData
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := s.parent.doReqURL(ctx, s.url("notification_policies"), &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+
 }
