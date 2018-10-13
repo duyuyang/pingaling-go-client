@@ -10,7 +10,7 @@ type Predicate func(interface{}) bool
 type Mapper func(interface{}) interface{}
 
 // New returns a channel of interface
-func New(els []interface{}) Iter {
+func New(els ...interface{}) Iter {
 	c := make(Iter)
 	go func() {
 		for _, el := range els {
@@ -21,13 +21,25 @@ func New(els []interface{}) Iter {
 	return c
 }
 
-// StringToInterface converts list of string to interface
-func StringToInterface(s []string) (r []interface{}) {
-	r = make([]interface{}, len(s))
-	for i, v := range s {
-		r[i] = v
+// List convert Iter to Interface{}
+func List(it Iter) []interface{} {
+	arr := make([]interface{}, 0, 1)
+	for el := range it {
+		arr = append(arr, el)
 	}
-	return
+	return arr
+}
+
+// StrIter returns channels of string
+func StrIter(els []string) Iter {
+	c := make(Iter)
+	go func() {
+		for _, el := range els {
+			c <- el
+		}
+		close(c)
+	}()
+	return c
 }
 
 // Map an iterator to fn(el) for el in it

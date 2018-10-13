@@ -134,9 +134,11 @@ func (s *Session) DeleteNotificationPolicies(name []string) {
 }
 
 func (s *Session) deleteIter(pather func(i interface{}) interface{}, name []string) {
-	for i := range Map(pather, New(StringToInterface(name))) {
+
+	for i := range Map(pather, StrIter(name)) {
 		fmt.Println(Message, s.deleter(i))
 	}
+
 }
 
 func (s *Session) deleter(p interface{}) interface{} {
