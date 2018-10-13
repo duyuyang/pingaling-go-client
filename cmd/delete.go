@@ -35,8 +35,9 @@ var deleteCmd = &cobra.Command{
 }
 
 var deleteEndpointCmd = &cobra.Command{
-	Use:   "endpoint",
-	Short: "Delete the endpoint by name",
+	Use:     "endpoint",
+	Short:   "Delete the endpoint by name",
+	Aliases: []string{"ep"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("Requires one endpoint resource")
@@ -46,12 +47,10 @@ var deleteEndpointCmd = &cobra.Command{
 	Example: `
   # Delete the endpoint
   pingaling delete endpoint foo
-  pingaling delete endpoint foo1 foo2 ...
+  pingaling delete ep foo1 foo2 ...
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		r, err := session.DeleteEndpoints(args[0])
-		checkError(err)
-		fmt.Println("Message: ", r.Message)
+		session.DeleteEndpoints(args)
 	},
 }
 
@@ -71,9 +70,7 @@ var deleteNotificationChannelCmd = &cobra.Command{
   pingaling delete nc foo1 foo2 ...
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		r, err := session.DeleteNotificationChannels(args[0])
-		checkError(err)
-		fmt.Println("Message: ", r.Message)
+		session.DeleteNotificationChannels(args)
 	},
 }
 
@@ -93,9 +90,7 @@ var deleteNotificationPolicyCmd = &cobra.Command{
   pingaling delete np foo1 foo2 ...
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		r, err := session.DeleteNotificationPolicies(args[0])
-		checkError(err)
-		fmt.Println("Message: ", r.Message)
+		session.DeleteNotificationPolicies(args)
 	},
 }
 
