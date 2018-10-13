@@ -42,8 +42,8 @@ resources.`,
 `,
 }
 
-// healthCmd represents the health command
-var healthCmd = &cobra.Command{
+// getHealthCmd represents the health command
+var getHealthCmd = &cobra.Command{
 	Use:   "health",
 	Short: "List the health status summary",
 	Example: `
@@ -57,8 +57,8 @@ var healthCmd = &cobra.Command{
 	},
 }
 
-// endpointCmd represents the endpoint command
-var endpointCmd = &cobra.Command{
+// getEndpointCmd represents the endpoint command
+var getEndpointCmd = &cobra.Command{
 	Use:   "endpoint",
 	Short: "List a specified endpoint",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -78,8 +78,8 @@ var endpointCmd = &cobra.Command{
 	},
 }
 
-// endpointsCmd represents the endpoints command
-var endpointsCmd = &cobra.Command{
+// getEndpointsCmd represents the endpoints command
+var getEndpointsCmd = &cobra.Command{
 	Use:   "endpoints",
 	Short: "List a health summary of all endpoints",
 	Example: `
@@ -94,8 +94,8 @@ var endpointsCmd = &cobra.Command{
 	},
 }
 
-// incidentsCmd represents the incidents command
-var incidentsCmd = &cobra.Command{
+// getIncidentsCmd represents the incidents command
+var getIncidentsCmd = &cobra.Command{
 	Use:   "incidents",
 	Short: "List all incidents",
 	Example: `
@@ -109,8 +109,8 @@ var incidentsCmd = &cobra.Command{
 	},
 }
 
-// notificationChannelsCmd represents the notification channel command
-var notificationChannelsCmd = &cobra.Command{
+// getNotificationChannelsCmd represents the notification channel command
+var getNotificationChannelsCmd = &cobra.Command{
 	Use:     "notification-channels",
 	Short:   "List all notification channels",
 	Aliases: []string{"nc"},
@@ -127,8 +127,8 @@ var notificationChannelsCmd = &cobra.Command{
 	},
 }
 
-// notificationPoliciesCmd represents the notification policies command
-var notificationPoliciesCmd = &cobra.Command{
+// getNotificationPoliciesCmd represents the notification policies command
+var getNotificationPoliciesCmd = &cobra.Command{
 	Use:     "notification-policies",
 	Short:   "List all notification policies",
 	Aliases: []string{"np"},
@@ -147,10 +147,10 @@ var notificationPoliciesCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(getCmd)
-	getCmd.AddCommand(healthCmd)
-	getCmd.AddCommand(endpointCmd)
-	getCmd.AddCommand(endpointsCmd)
-	getCmd.AddCommand(incidentsCmd)
-	getCmd.AddCommand(notificationChannelsCmd)
-	getCmd.AddCommand(notificationPoliciesCmd)
+	getCmd.AddCommand(getHealthCmd)
+	getCmd.AddCommand(getEndpointCmd)
+	getCmd.AddCommand(getEndpointsCmd)
+	getCmd.AddCommand(getIncidentsCmd)
+	getCmd.AddCommand(getNotificationChannelsCmd)
+	getCmd.AddCommand(getNotificationPoliciesCmd)
 }
