@@ -18,7 +18,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/pingaling/pkg/pingaline"
 )
 
 // configCmd represents the config command
@@ -38,7 +37,7 @@ var currentServerCmd = &cobra.Command{
 	Aliases: []string{"cs"},
 	Short:   "Show the current backend API",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("current Server: ", clientCfg.(*pingaline.Config).GetServerURI())
+		fmt.Println("current Server: ", clientCfg.(*pingaling.Config).GetServerURI())
 	},
 }
 

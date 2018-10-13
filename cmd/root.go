@@ -20,7 +20,7 @@ import (
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
-	pl "github.com/spf13/pingaling/pkg/pingaline"
+	pl "github.com/spf13/pingaling/pkg/pingaling"
 	"github.com/spf13/viper"
 )
 

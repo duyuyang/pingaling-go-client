@@ -18,7 +18,7 @@ import (
 	"errors"
 
 	"github.com/spf13/cobra"
-	pl "github.com/spf13/pingaling/pkg/pingaline"
+	pl "github.com/spf13/pingaling/pkg/pingaling"
 )
 
 func checkError(err error) {
@@ -35,10 +35,10 @@ var getCmd = &cobra.Command{
 resources.`,
 	Example: `
  # List all health status
- pingaline get health
+ pingaling get health
 
  # List all incidents
- pingaline get incidents
+ pingaling get incidents
 `,
 }
 
