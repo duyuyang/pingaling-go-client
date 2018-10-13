@@ -90,7 +90,7 @@ func initConfig() {
 		BaseURL: clientCfg.(*pl.Config).GetServerURI(),
 	}
 
-	// Use session to make functtion call
+	// Use session to make function call
 	session, _ = client.CreateSession()
 
 }
