@@ -92,13 +92,39 @@ func (s *Session) GetNotificationPolicies() (*NotificationPolicyData, error) {
 
 }
 
-// DeleteEndpoint delete specific endpoint
-func (s *Session) DeleteEndpoint(name string) (*DeleteMsg, error) {
+// DeleteEndpoints delete specific endpoint
+func (s *Session) DeleteEndpoints(name string) (*DeleteMsg, error) {
 
 	var r DeleteMsg
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	if err := s.parent.Delete(ctx, s.url("endpoints/"+name), &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+
+}
+
+// DeleteNotificationChannels delete specific incident
+func (s *Session) DeleteNotificationChannels(name string) (*DeleteMsg, error) {
+
+	var r DeleteMsg
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := s.parent.Delete(ctx, s.url("notification_channels/"+name), &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+
+}
+
+// DeleteNotificationPolicies delete specific incident
+func (s *Session) DeleteNotificationPolicies(name string) (*DeleteMsg, error) {
+
+	var r DeleteMsg
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := s.parent.Delete(ctx, s.url("notification_policies/"+name), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil

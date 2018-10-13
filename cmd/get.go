@@ -21,12 +21,6 @@ import (
 	pl "github.com/spf13/pingaling/pkg/pingaling"
 )
 
-func checkError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 // getCmd represents the get command
 var getCmd = &cobra.Command{
 	Use:   "get",

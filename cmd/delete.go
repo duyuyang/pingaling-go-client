@@ -44,17 +44,64 @@ var deleteEndpointCmd = &cobra.Command{
 		return nil
 	},
 	Example: `
- # Delete the endpoint
- pingaling delete endpoint foo
+  # Delete the endpoint
+  pingaling delete endpoint foo
+  pingaling delete endpoint foo1 foo2 ...
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		ep, err := session.DeleteEndpoint(args[0])
+		r, err := session.DeleteEndpoints(args[0])
 		checkError(err)
-		fmt.Println("Message: ", ep.Message)
+		fmt.Println("Message: ", r.Message)
+	},
+}
+
+var deleteNotificationChannelCmd = &cobra.Command{
+	Use:     "notification-channel",
+	Short:   "Delete the notification channels by name",
+	Aliases: []string{"nc"},
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("Requires at least one notification channel resource")
+		}
+		return nil
+	},
+	Example: `
+  # Delete the notification channel
+  pingaling delete notification-channel foo
+  pingaling delete nc foo1 foo2 ...
+	`,
+	Run: func(cmd *cobra.Command, args []string) {
+		r, err := session.DeleteNotificationChannels(args[0])
+		checkError(err)
+		fmt.Println("Message: ", r.Message)
+	},
+}
+
+var deleteNotificationPolicyCmd = &cobra.Command{
+	Use:     "notification-policy",
+	Short:   "Delete the notification-policy by name",
+	Aliases: []string{"np"},
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("Requires at least one notification-policy resource")
+		}
+		return nil
+	},
+	Example: `
+  # Delete the notification-policy
+  pingaling delete notification-policy foo
+  pingaling delete np foo1 foo2 ...
+	`,
+	Run: func(cmd *cobra.Command, args []string) {
+		r, err := session.DeleteNotificationPolicies(args[0])
+		checkError(err)
+		fmt.Println("Message: ", r.Message)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(deleteCmd)
 	deleteCmd.AddCommand(deleteEndpointCmd)
+	deleteCmd.AddCommand(deleteNotificationChannelCmd)
+	deleteCmd.AddCommand(deleteNotificationPolicyCmd)
 }
