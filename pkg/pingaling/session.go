@@ -16,9 +16,20 @@ package pingaling
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
+const (
+	Incidents            = "incidents"
+	NotificationChannels = "notification_channels"
+	NotificationPolicies = "notification_policies"
+	Endpoints            = "endpoints"
+	Message              = "Message: "
+	HealthSummary        = "health/summary"
+)
+
+// Session establish connection to API
 type Session struct {
 	parent    *Client
 	SessionID string
@@ -34,7 +45,7 @@ func (s *Session) GetHealthStatus() (*HealthData, error) {
 	var r HealthData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.doReqURL(ctx, s.url("health/summary"), &r); err != nil {
+	if err := s.parent.Get(ctx, s.url(HealthSummary), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -46,7 +57,7 @@ func (s *Session) GetEndpoints(epName string) (*EndpointData, error) {
 	var r EndpointData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.doReqURL(ctx, s.url("endpoints/"+epName), &r); err != nil {
+	if err := s.parent.Get(ctx, s.url(Endpoints+"/"+epName), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -59,7 +70,7 @@ func (s *Session) GetIncidents() (*IncidentData, error) {
 	var r IncidentData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.doReqURL(ctx, s.url("incidents"), &r); err != nil {
+	if err := s.parent.Get(ctx, s.url(Incidents), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -72,7 +83,7 @@ func (s *Session) GetNotificationChannels() (*NotificationChannelData, error) {
 	var r NotificationChannelData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.doReqURL(ctx, s.url("notification_channels"), &r); err != nil {
+	if err := s.parent.Get(ctx, s.url(NotificationChannels), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -85,9 +96,59 @@ func (s *Session) GetNotificationPolicies() (*NotificationPolicyData, error) {
 	var r NotificationPolicyData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.doReqURL(ctx, s.url("notification_policies"), &r); err != nil {
+	if err := s.parent.Get(ctx, s.url(NotificationPolicies), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
+
+}
+
+// DeleteEndpoints delete specific endpoint
+func (s *Session) DeleteEndpoints(name []string) {
+
+	pather := func(i interface{}) interface{} {
+		return Endpoints + "/" + i.(string)
+	}
+	s.deleteIter(pather, name)
+
+}
+
+// DeleteNotificationChannels delete specific notification channels
+func (s *Session) DeleteNotificationChannels(name []string) {
+
+	pather := func(i interface{}) interface{} {
+		return NotificationChannels + "/" + i.(string)
+	}
+	s.deleteIter(pather, name)
+
+}
+
+// DeleteNotificationPolicies delete specific notification policies
+func (s *Session) DeleteNotificationPolicies(name []string) {
+
+	pather := func(i interface{}) interface{} {
+		return NotificationPolicies + "/" + i.(string)
+	}
+	s.deleteIter(pather, name)
+
+}
+
+func (s *Session) deleteIter(pather func(i interface{}) interface{}, name []string) {
+	for i := range Map(pather, New(StringToInterface(name))) {
+		fmt.Println(Message, s.deleter(i))
+	}
+}
+
+func (s *Session) deleter(p interface{}) interface{} {
+	var r DeleteMsg
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+	defer cancel()
+	if err := s.parent.Delete(ctx, s.url(p.(string)), &r); err != nil {
+		panic(err)
+	}
+
+	return r.Message
 
 }

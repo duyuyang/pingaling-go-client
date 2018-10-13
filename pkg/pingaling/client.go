@@ -70,8 +70,8 @@ func (c *Client) urlBase(endpoint string) string {
 	return fmt.Sprintf("%s/%s", base, endpoint)
 }
 
-func (c *Client) doReqURL(ctx context.Context, url string, jsonInto interface{}) error {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+func (c *Client) doReqURL(ctx context.Context, method string, url string, ts interface{}) error {
+	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func (c *Client) doReqURL(ctx context.Context, url string, jsonInto interface{})
 			Code:         resp.StatusCode,
 		}
 	}
-	if err := json.NewDecoder(&b).Decode(jsonInto); err != nil {
+	if err := json.NewDecoder(&b).Decode(ts); err != nil {
 		return &ErrNotExpectedJSON{
 			OriginalBody: debug,
 			Err:          err,
@@ -109,4 +109,14 @@ func (c *Client) doReqURL(ctx context.Context, url string, jsonInto interface{})
 func withCancel(ctx context.Context, client *http.Client, req *http.Request) (resp *http.Response, err error) {
 	req.Cancel = ctx.Done()
 	return client.Do(req)
+}
+
+// Get request
+func (c *Client) Get(ctx context.Context, url string, ts interface{}) error {
+	return c.doReqURL(ctx, http.MethodGet, url, ts)
+}
+
+// Delete request
+func (c *Client) Delete(ctx context.Context, url string, ts interface{}) error {
+	return c.doReqURL(ctx, http.MethodDelete, url, ts)
 }
