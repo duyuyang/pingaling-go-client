@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pingaline
+package pingaling
 
 // Config is a struct of configuration file data
 type Config struct {

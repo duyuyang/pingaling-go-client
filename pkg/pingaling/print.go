@@ -1,4 +1,4 @@
-package pingaline
+package pingaling
 
 import (
 	"fmt"
