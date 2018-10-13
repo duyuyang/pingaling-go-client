@@ -42,13 +42,6 @@ func Map(fn Mapper, it Iter) Iter {
 	return c
 }
 
-// MapEx Execute Mapper
-func MapEx(fn Mapper, it Iter) {
-	for el := range it {
-		fn(el)
-	}
-}
-
 // Filter out any elements where pred(el) == false
 func Filter(pred Predicate, it Iter) Iter {
 	c := make(Iter)
