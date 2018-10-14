@@ -76,9 +76,8 @@ func (c *Client) doReqURL(ctx context.Context, method string, url string,
 	statusCode = resp.StatusCode
 
 	// Make a copy of the response body
-	if _, err := io.Copy(&b, resp.Body); err != nil {
-		CheckError(err)
-	}
+	_, err = io.Copy(&b, resp.Body)
+	CheckError(err)
 
 	return
 
