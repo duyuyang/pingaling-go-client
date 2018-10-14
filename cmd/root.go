@@ -94,9 +94,3 @@ func initConfig() {
 	session, _ = client.CreateSession()
 
 }
-
-func checkError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}

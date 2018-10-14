@@ -46,7 +46,7 @@ var getHealthCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		h, err := session.GetHealthStatus()
-		checkError(err)
+		pl.CheckError(err)
 		pl.TableHealth(h.Data)
 	},
 }
@@ -67,7 +67,7 @@ var getEndpointCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		ep, err := session.GetEndpoints(args[0])
-		checkError(err)
+		pl.CheckError(err)
 		pl.TableEndpoints(ep.Data)
 	},
 }
@@ -83,7 +83,7 @@ var getEndpointsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Return health summary for now
 		h, err := session.GetHealthStatus()
-		checkError(err)
+		pl.CheckError(err)
 		pl.TableHealth(h.Data)
 	},
 }
@@ -98,7 +98,7 @@ var getIncidentsCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		i, err := session.GetIncidents()
-		checkError(err)
+		pl.CheckError(err)
 		pl.TableIncidents(i.Data)
 	},
 }
@@ -116,7 +116,7 @@ var getNotificationChannelsCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		nc, err := session.GetNotificationChannels()
-		checkError(err)
+		pl.CheckError(err)
 		pl.TableNotificationChannels(nc.Data)
 	},
 }
@@ -134,7 +134,7 @@ var getNotificationPoliciesCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		nc, err := session.GetNotificationPolicies()
-		checkError(err)
+		pl.CheckError(err)
 		pl.TableNotificationPolicies(nc.Data)
 	},
 }
