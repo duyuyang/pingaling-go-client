@@ -43,6 +43,23 @@ type EndpointData struct {
 	Data Endpoint `json:"data"`
 }
 
+type EndpointManifestReq struct {
+	Manifest   EndpointMReqSpec `json:"spec"`
+	Kind       string           `json:"kind"`
+	APIVersion string           `json:"apiVersion"`
+}
+
+type EndpointMReqSpec struct {
+	URL  string `json:"url"`
+	Name string `json:"name"`
+}
+
+type EndpointManifestResp struct {
+	URL         string `json:"url"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 type Incident struct {
 	URL         string `json:"url"`
 	UpdatedAt   string `json:"updated_at"`

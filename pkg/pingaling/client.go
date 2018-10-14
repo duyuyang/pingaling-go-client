@@ -33,26 +33,6 @@ type Client struct {
 	BaseURL    string
 }
 
-// ErrNotExpectedJSON is returned when the API response isn't expected JSON
-type ErrNotExpectedJSON struct {
-	OriginalBody string
-	Err          error
-}
-
-// ErrBadStatusCode is returned when the API returns a non 200 error code
-type ErrBadStatusCode struct {
-	OriginalBody string
-	Code         int
-}
-
-func (e *ErrBadStatusCode) Error() string {
-	return fmt.Sprintf("Invalid status code: %d", e.Code)
-}
-
-func (e *ErrNotExpectedJSON) Error() string {
-	return fmt.Sprintf("Unexpected JSON: %s from %s", e.Err.Error(), e.OriginalBody)
-}
-
 // CreateSession is a required for further API use.
 func (c *Client) CreateSession() (*Session, error) {
 	var v createSessionResp
@@ -70,40 +50,38 @@ func (c *Client) urlBase(endpoint string) string {
 	return fmt.Sprintf("%s/%s", base, endpoint)
 }
 
-func (c *Client) doReqURL(ctx context.Context, method string, url string, ts interface{}) error {
-	req, err := http.NewRequest(method, url, nil)
-	if err != nil {
-		return err
-	}
-	resp, err := withCancel(ctx, &c.HTTPClient, req)
-	if err != nil {
-		return err
-	}
+func (c *Client) doReqURL(ctx context.Context, method string, url string,
+	headers map[string]string, body io.Reader) (statusCode int, b bytes.Buffer) {
 
+	// Prepare request
+	req, err := http.NewRequest(method, url, body)
+	CheckError(err)
+	// Set headers
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
+	// make request
+	resp, err := withCancel(ctx, &c.HTTPClient, req)
+	CheckError(err)
+
+	// drain and close the response body before return
 	defer func() {
 		var maxCopySize int64
 		maxCopySize = 2 << 10
-		io.CopyN(ioutil.Discard, resp.Body, maxCopySize) // drain the response body
-		resp.Body.Close()                                //close body
+		io.CopyN(ioutil.Discard, resp.Body, maxCopySize)
+		resp.Body.Close()
 	}()
-	var b bytes.Buffer
+
+	// HTTP response Status Code
+	statusCode = resp.StatusCode
+
+	// Make a copy of the response body
 	if _, err := io.Copy(&b, resp.Body); err != nil {
-		return err
+		CheckError(err)
 	}
-	debug := b.String()
-	if resp.StatusCode != http.StatusOK {
-		return &ErrBadStatusCode{
-			OriginalBody: debug,
-			Code:         resp.StatusCode,
-		}
-	}
-	if err := json.NewDecoder(&b).Decode(ts); err != nil {
-		return &ErrNotExpectedJSON{
-			OriginalBody: debug,
-			Err:          err,
-		}
-	}
-	return nil
+
+	return
+
 }
 
 func withCancel(ctx context.Context, client *http.Client, req *http.Request) (resp *http.Response, err error) {
@@ -113,10 +91,55 @@ func withCancel(ctx context.Context, client *http.Client, req *http.Request) (re
 
 // Get request
 func (c *Client) Get(ctx context.Context, url string, ts interface{}) error {
-	return c.doReqURL(ctx, http.MethodGet, url, ts)
+	statusCode, b := c.doReqURL(ctx, http.MethodGet, url, nil, nil)
+	if statusCode != http.StatusOK {
+		return &ErrBadStatusCode{
+			OriginalBody: b.String(),
+			Code:         statusCode,
+		}
+	}
+	// Decode response into target struct
+	if err := json.NewDecoder(&b).Decode(ts); err != nil {
+		return &ErrNotExpectedJSON{
+			OriginalBody: b.String(),
+			Err:          err,
+		}
+	}
+	return nil
 }
 
 // Delete request
 func (c *Client) Delete(ctx context.Context, url string, ts interface{}) error {
-	return c.doReqURL(ctx, http.MethodDelete, url, ts)
+	statusCode, b := c.doReqURL(ctx, http.MethodDelete, url, nil, nil)
+	if statusCode != http.StatusOK {
+		return &ErrBadStatusCode{
+			OriginalBody: b.String(),
+			Code:         statusCode,
+		}
+	}
+	// Decode response into target struct
+	if err := json.NewDecoder(&b).Decode(ts); err != nil {
+		return &ErrNotExpectedJSON{
+			OriginalBody: b.String(),
+			Err:          err,
+		}
+	}
+	return nil
+}
+
+// Post request
+func (c *Client) Post(ctx context.Context, url string, body io.Reader) (string, error) {
+
+	headers := make(map[string]string)
+	//headers["Content-Type"] = "multipart/mixed; boundary=plug_conn_test"
+	headers["Content-Type"] = "application/json"
+
+	statusCode, b := c.doReqURL(ctx, http.MethodPost, url, headers, body)
+	if statusCode != http.StatusCreated {
+		return "", &ErrBadStatusCode{
+			OriginalBody: b.String(),
+			Code:         statusCode,
+		}
+	}
+	return b.String(), nil
 }

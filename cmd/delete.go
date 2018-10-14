@@ -16,7 +16,6 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -29,9 +28,6 @@ var deleteCmd = &cobra.Command{
   # Delete an incident
   pingaling delete incident foo
 `,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("delete called")
-	},
 }
 
 var deleteEndpointCmd = &cobra.Command{

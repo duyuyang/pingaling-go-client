@@ -15,6 +15,7 @@
 package pingaling
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"time"
@@ -27,6 +28,7 @@ const (
 	Endpoints            = "endpoints"
 	Message              = "Message: "
 	HealthSummary        = "health/summary"
+	Manifest             = "manifest"
 )
 
 // Session establish connection to API
@@ -147,10 +149,29 @@ func (s *Session) deleter(p interface{}) interface{} {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 
 	defer cancel()
-	if err := s.parent.Delete(ctx, s.url(p.(string)), &r); err != nil {
-		panic(err)
-	}
-
+	err := s.parent.Delete(ctx, s.url(p.(string)), &r)
+	CheckError(err)
 	return r.Message
+
+}
+
+// ApplyManifests post manifests to server to create resources
+func (s *Session) ApplyManifests() {
+	// [TODO] Use Map to support multiple yaml
+	var jsonStr = []byte(`{
+			"manifest": {
+				"spec": {
+					"url": "https://google.com",
+					"name": "foobar-svc"
+				},
+				"kind": "checks/endpoint",
+				"apiVersion": 1
+			}
+		}`)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	r, err := s.parent.Post(ctx, s.url(Manifest), bytes.NewBuffer(jsonStr))
+	CheckError(err)
+	fmt.Println(r)
 
 }
