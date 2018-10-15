@@ -18,7 +18,7 @@ import (
 	"errors"
 
 	"github.com/spf13/cobra"
-	pl "github.com/spf13/pingaling/pkg/pingaling"
+	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
 )
 
 // getCmd represents the get command

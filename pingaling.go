@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/spf13/pingaling/cmd"
+import "bitbucket.org/pingaling-monitoring/client/cmd"
 
 func main() {
 	cmd.Execute()
