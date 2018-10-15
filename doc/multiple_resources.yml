@@ -1,0 +1,16 @@
+---
+apiVersion: 1
+kind: checks/endpoint
+spec:
+  name: dingbat-fluffer
+  url: https://google.com.au
+  description: Actually has external service
+  interval: 2
+  retries: 1
+
+---
+apiVersion: 1
+kind: notifications/slack
+spec:
+  name: slacktastic
+  webhook_url: https://hooks.slack.com/services/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

@@ -1,0 +1,9 @@
+---
+apiVersion: 1
+kind: checks/endpoint
+spec:
+  name: dingbat-fluffer
+  url: https://google.com.au
+  description: Actually has external service
+  interval: 2
+  retries: 1
