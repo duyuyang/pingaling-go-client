@@ -5,7 +5,7 @@
 ```shell
 $ go get -d bitbucket.org/pingaling-monitoring/client
 $ cd $GOPATH/src/bitbucket.org/pingaling-monitoring/client
-$ go get ./...              # instal dependencies
+$ go get ./...              # install dependencies
 $ go build -o pingaling .   # build binary
 ```
 
