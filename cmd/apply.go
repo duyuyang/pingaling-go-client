@@ -15,7 +15,11 @@
 package cmd
 
 import (
+	"fmt"
+	"path/filepath"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var filename string
@@ -29,7 +33,26 @@ var applyCmd = &cobra.Command{
   pingaling apply -f endpoint.yml
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		session.ApplyManifests()
+
+		// get body from config
+		
+		viper.AddConfigPath(filepath.Dir(filename))
+		base := filepath.Base(filename)
+		extension := filepath.Ext(filename)
+		viper.SetConfigName(base[0 : len(base)-len(extension)]) // Filename without ext
+
+		err := viper.ReadInConfig()
+		if err != nil {
+			panic(fmt.Errorf("Fatal error config file: %s", err))
+		} else {
+			fmt.Println(viper.Get("apiVersion"))
+			fmt.Println(viper.GetString("kind"))
+			fmt.Println(viper.GetStringMapString("spec"))
+
+		}
+
+		// Pass body to ApplyManifests
+		//session.ApplyManifests()
 
 	},
 }
