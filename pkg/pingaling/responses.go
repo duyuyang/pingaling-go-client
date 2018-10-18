@@ -106,5 +106,5 @@ type TypeMeta struct {
 }
 
 type ManifestReq struct {
-	Manifest TypeMeta `json:"manifest"`
+	Manifest TypeMeta `json:"manifest" yaml:"manifest"`
 }
