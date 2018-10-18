@@ -1,0 +1,7 @@
+---
+apiVersion: 1
+kind: notifications/policy
+spec:
+  name: alertface
+  endpoint: dingbat-scrobblerly
+  channel: slacktastic

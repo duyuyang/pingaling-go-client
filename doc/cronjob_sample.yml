@@ -1,0 +1,10 @@
+---
+apiVersion: 1
+kind: checks/cronjob
+spec:
+  name: scheduled-twinkler
+  description: This vital business process ensures the twinkler is twinkled as per our requirements
+  # Will alert every three minutes unless signalled with success
+  # Can also specify hours and days
+  alert_without_success:
+    minutes: 3

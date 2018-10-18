@@ -15,6 +15,9 @@
 package cmd
 
 import (
+	"io/ioutil"
+
+	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
 	"github.com/spf13/cobra"
 )
 
@@ -29,8 +32,17 @@ var applyCmd = &cobra.Command{
   pingaling apply -f endpoint.yml
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		session.ApplyManifests()
 
+		// Readfile
+		content, err := ioutil.ReadFile(filename)
+		pl.CheckError(err)
+		// Split the YAML base on ---
+		docs, err := pl.SplitYAMLDocuments(content)
+		// Post manifest to API
+		for _, d := range docs {
+			session.ApplyManifest(d)
+		}
+		
 	},
 }
 
