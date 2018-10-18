@@ -54,7 +54,7 @@ func serverParser(serversI interface{}) []server {
 }
 
 // GetServerURI returns the current serverURI
-func (c Config) GetServerURI() string {
+func (c *Config) GetServerURI() string {
 	name := c.currentServer
 	servers := c.servers
 	// TODO: Can use a filter here

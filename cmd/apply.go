@@ -34,15 +34,18 @@ var applyCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// Readfile
-		content, err := ioutil.ReadFile(filename)
-		pl.CheckError(err)
-		// Split the YAML base on ---
-		docs, err := pl.SplitYAMLDocuments(content)
-		// Post manifest to API
-		for _, d := range docs {
-			session.ApplyManifest(d)
+		if content, err := ioutil.ReadFile(filename); err != nil {
+			panic(err)
+		} else {
+			// Split the YAML base on ---
+			docs, err := pl.SplitYAMLDocuments(content)
+			// Post manifest to API
+			for _, d := range docs {
+				session.ApplyManifest(d)
+			}
+
 		}
-		
+
 	},
 }
 
