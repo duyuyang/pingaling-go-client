@@ -157,10 +157,10 @@ func (s *Session) deleter(p interface{}) interface{} {
 }
 
 // ApplyManifest post manifest to API to create resource
-func (s *Session) ApplyManifest(doc interface{}) {
+func (s *Session) ApplyManifest(doc TypeMeta) {
 
 	manifest := ManifestReq{
-		Manifest: doc.(TypeMeta),
+		Manifest: doc,
 	}
 	buff, _ := json.Marshal(&manifest)
 

@@ -82,10 +82,10 @@ func (r *LineReader) Read() ([]byte, error) {
 	return buffer.Bytes(), err
 }
 
-func SplitYAMLDocuments(ymlBytes []byte) ([]interface{}, error) {
+func SplitYAMLDocuments(ymlBytes []byte) ([]TypeMeta, error) {
 	buf := bytes.NewBuffer(ymlBytes)
 	reader := NewYAMLReader(bufio.NewReader(buf))
-	docs := make([]interface{}, 0)
+	docs := make([]TypeMeta, 0)
 	for {
 		// Read one YAML document at a time, until io.EOF is returned
 		typeMetaInfo := TypeMeta{}
