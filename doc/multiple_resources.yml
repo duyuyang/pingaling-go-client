@@ -10,7 +10,11 @@ spec:
 
 ---
 apiVersion: 1
-kind: notifications/slack
+kind: checks/cronjob
 spec:
-  name: slacktastic
-  webhook_url: https://hooks.slack.com/services/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
+  name: scheduled-twinkler
+  description: This vital business process ensures the twinkler is twinkled as per our requirements
+  # Will alert every three minutes unless signalled with success
+  # Can also specify hours and days
+  alert_without_success:
+    minutes: 3

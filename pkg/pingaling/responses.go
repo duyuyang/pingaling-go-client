@@ -98,3 +98,13 @@ type NotificationPolicyData struct {
 type DeleteMsg struct {
 	Message string `json:"message"`
 }
+
+type TypeMeta struct {
+	APIVersion int                    `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
+	Kind       string                 `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Spec       map[string]interface{} `json:"spec" yaml:"spec"`
+}
+
+type ManifestReq struct {
+	Manifest TypeMeta `json:"manifest"`
+}

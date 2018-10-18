@@ -15,11 +15,10 @@
 package cmd
 
 import (
-	"fmt"
-	"path/filepath"
+	"io/ioutil"
 
+	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var filename string
@@ -34,26 +33,16 @@ var applyCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// get body from config
-		
-		viper.AddConfigPath(filepath.Dir(filename))
-		base := filepath.Base(filename)
-		extension := filepath.Ext(filename)
-		viper.SetConfigName(base[0 : len(base)-len(extension)]) // Filename without ext
-
-		err := viper.ReadInConfig()
-		if err != nil {
-			panic(fmt.Errorf("Fatal error config file: %s", err))
-		} else {
-			fmt.Println(viper.Get("apiVersion"))
-			fmt.Println(viper.GetString("kind"))
-			fmt.Println(viper.GetStringMapString("spec"))
-
+		// Readfile
+		content, err := ioutil.ReadFile(filename)
+		pl.CheckError(err)
+		// Split the YAML base on ---
+		docs, err := pl.SplitYAMLDocuments(content)
+		// Post manifest to API
+		for _, d := range docs {
+			session.ApplyManifest(d)
 		}
-
-		// Pass body to ApplyManifests
-		//session.ApplyManifests()
-
+		
 	},
 }
 

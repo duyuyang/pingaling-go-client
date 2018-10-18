@@ -17,6 +17,7 @@ package pingaling
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -155,23 +156,17 @@ func (s *Session) deleter(p interface{}) interface{} {
 
 }
 
-// ApplyManifests post manifests to server to create resources
-func (s *Session) ApplyManifests() {
-	// [TODO] Use Map to support multiple yaml
-	var jsonStr = []byte(`{
-			"manifest": {
-				"spec": {
-					"url": "https://google.com",
-					"name": "foobar-svc"
-				},
-				"kind": "checks/endpoint",
-				"apiVersion": 1
-			}
-		}`)
+// ApplyManifest post manifest to API to create resource
+func (s *Session) ApplyManifest(doc interface{}) {
+
+	manifest := ManifestReq{
+		Manifest: doc.(TypeMeta),
+	}
+	buff, _ := json.Marshal(&manifest)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	r, err := s.parent.Post(ctx, s.url(Manifest), bytes.NewBuffer(jsonStr))
+	r, err := s.parent.Post(ctx, s.url(Manifest), bytes.NewBuffer(buff))
 	CheckError(err)
 	fmt.Println(r)
-
 }
