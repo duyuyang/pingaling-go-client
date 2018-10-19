@@ -17,7 +17,6 @@ package cmd
 import (
 	"fmt"
 
-	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +37,7 @@ var currentServerCmd = &cobra.Command{
 	Aliases: []string{"cs"},
 	Short:   "Show the current backend API",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("current Server: ", clientCfg.(*pl.Config).GetServerURI())
+		fmt.Println("current Server: ", cfgStruct.GetServerURI())
 	},
 }
 

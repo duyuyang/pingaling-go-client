@@ -42,7 +42,6 @@ func TableEndpoints(ep Endpoint) {
 	defer w.Flush()
 
 	fmt.Fprintf(w, "\n%s\t%s\t%s\t%s", "# Name", "# Next Check", "# URL", "# DESCRIPTION")
-
 	fmt.Fprintf(w, "\n%v\t%v\t%v\t\"%v\"", ep.Name, ep.NextCheck, ep.URL, ep.Description)
 
 }

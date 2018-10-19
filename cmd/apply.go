@@ -38,12 +38,14 @@ var applyCmd = &cobra.Command{
 			panic(err)
 		} else {
 			// Split the YAML base on ---
-			docs, err := pl.SplitYAMLDocuments(content)
-			// Post manifest to API
-			for _, d := range docs {
-				session.ApplyManifest(d)
+			if docs, err := pl.SplitYAMLDocuments(content); err != nil {
+				panic(err)
+			} else {
+				// Post manifest to API
+				for _, d := range docs {
+					session.ApplyManifest(d)
+				}
 			}
-
 		}
 
 	},
