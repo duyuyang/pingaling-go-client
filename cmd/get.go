@@ -17,8 +17,8 @@ package cmd
 import (
 	"errors"
 
-	"github.com/spf13/cobra"
 	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
+	"github.com/spf13/cobra"
 )
 
 // getCmd represents the get command
@@ -45,9 +45,11 @@ var getHealthCmd = &cobra.Command{
  pingaling get health
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		h, err := session.GetHealthStatus()
-		pl.CheckError(err)
-		pl.TableHealth(h.Data)
+		if h, err := session.GetHealthStatus(); err != nil {
+			panic(err)
+		} else {
+			pl.TableHealth(h.Data)
+		}
 	},
 }
 
@@ -66,9 +68,11 @@ var getEndpointCmd = &cobra.Command{
   pingaling get endpoint foo-bar`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		ep, err := session.GetEndpoints(args[0])
-		pl.CheckError(err)
-		pl.TableEndpoints(ep.Data)
+		if ep, err := session.GetEndpoints(args[0]); err != nil {
+			panic(err)
+		} else {
+			pl.TableEndpoints(ep.Data)
+		}
 	},
 }
 
@@ -82,9 +86,11 @@ var getEndpointsCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Return health summary for now
-		h, err := session.GetHealthStatus()
-		pl.CheckError(err)
-		pl.TableHealth(h.Data)
+		if h, err := session.GetHealthStatus(); err != nil {
+			panic(err)
+		} else {
+			pl.TableHealth(h.Data)
+		}
 	},
 }
 
@@ -97,9 +103,11 @@ var getIncidentsCmd = &cobra.Command{
   pingaling get incidents`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		i, err := session.GetIncidents()
-		pl.CheckError(err)
-		pl.TableIncidents(i.Data)
+		if i, err := session.GetIncidents(); err != nil {
+			panic(err)
+		} else {
+			pl.TableIncidents(i.Data)
+		}
 	},
 }
 
@@ -115,9 +123,12 @@ var getNotificationChannelsCmd = &cobra.Command{
  	`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		nc, err := session.GetNotificationChannels()
-		pl.CheckError(err)
-		pl.TableNotificationChannels(nc.Data)
+		if nc, err := session.GetNotificationChannels(); err != nil {
+			panic(err)
+		} else {
+			pl.TableNotificationChannels(nc.Data)
+		}
+
 	},
 }
 
@@ -133,9 +144,12 @@ var getNotificationPoliciesCmd = &cobra.Command{
  	`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		nc, err := session.GetNotificationPolicies()
-		pl.CheckError(err)
-		pl.TableNotificationPolicies(nc.Data)
+		if nc, err := session.GetNotificationPolicies(); err != nil {
+			panic(err)
+		} else {
+			pl.TableNotificationPolicies(nc.Data)
+		}
+
 	},
 }
 

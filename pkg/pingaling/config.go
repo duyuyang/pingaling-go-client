@@ -14,54 +14,64 @@
 
 package pingaling
 
+import (
+	"encoding/json"
+	"io/ioutil"
+
+	"github.com/ghodss/yaml"
+	homedir "github.com/mitchellh/go-homedir"
+)
+
 // Config is a struct of configuration file data
 type Config struct {
-	currentServer string
-	servers       []server
+	CurrentServer string   `json:"current-server" yaml:"current-server"`
+	Servers       []Server `json:"servers" yaml:"servers"`
 }
 
-type server struct {
-	uri  string
-	name string
-}
-
-// NewConfig returns an initialized Config instance.
-func NewConfig(currentServer string, serversI interface{}) *Config {
-	return &Config{
-		currentServer: currentServer,
-		servers:       serverParser(serversI), // []server
-	}
-}
-
-func serverParser(serversI interface{}) []server {
-
-	servers := make([]server, 0)
-	serversS := serversI.([]interface{}) // []interface{}
-
-	for _, svr := range serversS {
-		// server is an interface{}
-
-		serverMap := svr.(map[interface{}]interface{})
-		// serverMap is a map[interface {}]interface {}
-
-		var s server
-		s.name = serverMap["name"].(string) // interface type assertion
-		s.uri = serverMap["server"].(string)
-
-		servers = append(servers, s)
-	}
-	return servers
+type Server struct {
+	URI  string `json:"server" yaml:"server"`
+	Name string `json:"name" yaml:"name"`
 }
 
 // GetServerURI returns the current serverURI
 func (c Config) GetServerURI() string {
-	name := c.currentServer
-	servers := c.servers
+	name := c.CurrentServer
+	servers := c.Servers
 	// TODO: Can use a filter here
 	for _, svr := range servers {
-		if svr.name == name {
-			return svr.uri
+		if svr.Name == name {
+			return svr.URI
 		}
 	}
 	return ""
+}
+
+// NewConfig reads from .pingaling config file, write into Config struct
+func NewConfig(cfgFile string, into interface{}) {
+	var (
+		content []byte
+		err     error
+	)
+
+	if cfgFile != "" {
+		// Use config file from the flag.
+		content, err = ioutil.ReadFile(cfgFile)
+		CheckError(err)
+
+	} else {
+		// Find home directory.
+		home, err := homedir.Dir()
+		CheckError(err)
+		// Search config in home directory with name ".pingaling".
+		content, err = ioutil.ReadFile(home + "/.pingaling")
+		CheckError(err)
+	}
+
+	if toJSON, err := yaml.YAMLToJSON(content); err != nil {
+		panic(err)
+	} else {
+		if err := json.Unmarshal(toJSON, into); err != nil {
+			panic(err)
+		}
+	}
 }

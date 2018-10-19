@@ -15,18 +15,15 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
-	homedir "github.com/mitchellh/go-homedir"
-	"github.com/spf13/cobra"
 	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
-	"github.com/spf13/viper"
+	"github.com/spf13/cobra"
 )
 
-var cfgFile string
-var clientCfg interface{}
-var session *pl.Session
+var (
+	cfgFile   string
+	cfgStruct pl.Config
+	session   *pl.Session
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -42,8 +39,7 @@ var rootCmd = &cobra.Command{
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		panic(err)
 	}
 
 }
@@ -56,38 +52,18 @@ func init() {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		// Search config in home directory with name ".pingaling".
-		viper.SetConfigType("yaml")
-		viper.SetConfigFile(home + "/.pingaling")
-	}
+	// Initiate the Config
+	pl.NewConfig(cfgFile, &cfgStruct)
 
-	viper.AutomaticEnv() // read in environment variables that match
+	// Initiate the Client session
+	initClient()
 
-	// If a config file is found, read it in.
-	err := viper.ReadInConfig()
-	if err != nil {
-		fmt.Println("\nRead Config: ", err)
-	} else {
-		// read the field
-		currentServer := viper.GetString("current-server")
-		serversI := viper.Get("servers") // interface{}
+}
 
-		clientCfg = pl.NewConfig(currentServer, serversI)
-	}
-
+func initClient() {
 	// initiate the client
 	client := pl.Client{
-		BaseURL: clientCfg.(*pl.Config).GetServerURI(),
+		BaseURL: cfgStruct.GetServerURI(),
 	}
 
 	// Use session to make function call

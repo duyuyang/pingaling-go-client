@@ -111,6 +111,7 @@ func SplitYAMLDocuments(ymlBytes []byte) ([]TypeMeta, error) {
 			break
 		}
 		// Deserialize the TypeMeta information of this byte slice
+
 		if err := yaml.Unmarshal(b, &typeMetaInfo); err != nil {
 			return nil, err
 		}
