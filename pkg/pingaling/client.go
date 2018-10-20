@@ -33,12 +33,20 @@ type Client struct {
 	BaseURL    string
 }
 
+// HTTPService allow session features to call client functions
+type HTTPService interface {
+	Get(context.Context, string, interface{}) error
+	Delete(context.Context, string, interface{}) error
+	Post(context.Context, string, io.Reader) (bytes.Buffer, error)
+}
+
 // CreateSession is a required for further API use.
 func (c *Client) CreateSession() (*Session, error) {
 	var v createSessionResp
 	return &Session{
-		parent:    c,
-		SessionID: v.SessionID,
+		parent:      c,
+		SessionID:   v.SessionID,
+		HTTPService: c,
 	}, nil
 }
 
@@ -127,7 +135,7 @@ func (c *Client) Delete(ctx context.Context, url string, ts interface{}) error {
 }
 
 // Post request
-func (c *Client) Post(ctx context.Context, url string, body io.Reader) (string, error) {
+func (c *Client) Post(ctx context.Context, url string, body io.Reader) (bytes.Buffer, error) {
 
 	headers := make(map[string]string)
 	//headers["Content-Type"] = "multipart/mixed; boundary=plug_conn_test"
@@ -135,10 +143,10 @@ func (c *Client) Post(ctx context.Context, url string, body io.Reader) (string, 
 
 	statusCode, b := c.doReqURL(ctx, http.MethodPost, url, headers, body)
 	if statusCode != http.StatusCreated {
-		return "", &ErrBadStatusCode{
+		return bytes.Buffer{}, &ErrBadStatusCode{
 			OriginalBody: b.String(),
 			Code:         statusCode,
 		}
 	}
-	return b.String(), nil
+	return b, nil
 }
