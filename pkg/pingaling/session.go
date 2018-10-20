@@ -152,6 +152,7 @@ func (s *Session) deleter(p interface{}) interface{} {
 
 	defer cancel()
 	err := s.HTTPService.Delete(ctx, s.url(p.(string)), &r)
+
 	CheckError(err)
 	return r.Message
 
