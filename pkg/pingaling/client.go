@@ -33,6 +33,7 @@ type Client struct {
 	BaseURL    string
 }
 
+// HTTPService allow session features to call client functions
 type HTTPService interface {
 	Get(context.Context, string, interface{}) error
 	Delete(context.Context, string, interface{}) error
