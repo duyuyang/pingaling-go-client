@@ -168,7 +168,7 @@ func (s *Session) deleter(p interface{}) interface{} {
 }
 
 // ApplyManifest post manifest to API to create resource
-func (s *Session) ApplyManifest(doc TypeMeta) {
+func (s *Session) ApplyManifest(doc TypeMeta) (bytes.Buffer, error) {
 
 	manifest := ManifestReq{
 		Manifest: doc,
@@ -176,6 +176,7 @@ func (s *Session) ApplyManifest(doc TypeMeta) {
 	buff, _ := json.Marshal(&manifest)
 
 	r, err := s.HTTPService.Post(s.url(Manifest), bytes.NewBuffer(buff))
-	CheckError(err)
-	fmt.Println(r.String())
+
+	return r, err
+
 }

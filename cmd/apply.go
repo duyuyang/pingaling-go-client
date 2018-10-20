@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
@@ -43,7 +44,11 @@ var applyCmd = &cobra.Command{
 			} else {
 				// Post manifest to API
 				for _, d := range docs {
-					session.ApplyManifest(d)
+					if buf, err := session.ApplyManifest(d); err != nil {
+						panic(err)
+					} else {
+						fmt.Println(buf.String())
+					}
 				}
 			}
 		}
