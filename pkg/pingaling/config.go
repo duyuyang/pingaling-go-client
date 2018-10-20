@@ -15,10 +15,8 @@
 package pingaling
 
 import (
-	"encoding/json"
 	"io/ioutil"
 
-	"github.com/ghodss/yaml"
 	homedir "github.com/mitchellh/go-homedir"
 )
 
@@ -67,11 +65,7 @@ func NewConfig(cfgFile string, into interface{}) {
 		CheckError(err)
 	}
 
-	if toJSON, err := yaml.YAMLToJSON(content); err != nil {
+	if err = YAMLDecoder(content, into); err != nil {
 		panic(err)
-	} else {
-		if err := json.Unmarshal(toJSON, into); err != nil {
-			panic(err)
-		}
 	}
 }

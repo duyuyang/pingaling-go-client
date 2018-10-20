@@ -17,6 +17,7 @@ package pingaling
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"io"
 	"strings"
 	"unicode"
@@ -119,4 +120,16 @@ func SplitYAMLDocuments(ymlBytes []byte) ([]TypeMeta, error) {
 	}
 
 	return docs, nil
+}
+
+// YAMLDecoder unmarshal []byte to struct
+func YAMLDecoder(b []byte, into interface{}) error {
+	if toJSON, err := yaml.YAMLToJSON(b); err != nil {
+		return err
+	} else {
+		if err := json.Unmarshal(toJSON, into); err != nil {
+			return err
+		}
+	}
+	return nil
 }
