@@ -151,8 +151,6 @@ func (s *Session) deleter(p interface{}) interface{} {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 
 	defer cancel()
-	//err := s.parent.Delete(ctx, s.url(p.(string)), &r)
-	// err := s.serviceDELETE.Delete(ctx, s.url(p.(string)), &r)
 	err := s.HTTPService.Delete(ctx, s.url(p.(string)), &r)
 	CheckError(err)
 	return r.Message
@@ -169,7 +167,6 @@ func (s *Session) ApplyManifest(doc TypeMeta) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	// r, err := s.parent.Post(ctx, s.url(Manifest), bytes.NewBuffer(buff))
 	r, err := s.HTTPService.Post(ctx, s.url(Manifest), bytes.NewBuffer(buff))
 	CheckError(err)
 	fmt.Println(r.String())
