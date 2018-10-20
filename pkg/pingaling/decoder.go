@@ -133,3 +133,15 @@ func YAMLDecoder(b []byte, into interface{}) error {
 	}
 	return nil
 }
+
+// JSONDecoder decode response into target struct
+func JSONDecoder(b bytes.Buffer, into interface{}) error {
+
+	if err := json.NewDecoder(&b).Decode(into); err != nil {
+		return &ErrNotExpectedJSON{
+			OriginalBody: b.String(),
+			Err:          err,
+		}
+	}
+	return nil
+}

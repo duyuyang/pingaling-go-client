@@ -1,61 +1,65 @@
 package pingaling
 
 import (
-	"context"
-	"reflect"
+	"bytes"
 	"testing"
 
+	"bitbucket.org/pingaling-monitoring/client/pkg/pingaling/mocks"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
-const MockURL = "http://locathost/api"
+const MockURL = "http://localhost/api"
 
-func TestURL(t *testing.T) {
-	clt := new(ClientMock)
-	mockSession := Session{
-		parent: &Client{
-			BaseURL: MockURL,
-		},
-		HTTPService: clt,
-	}
-	assert.Equal(t, MockURL+"/blah", mockSession.url("blah"))
+type SessionsTestSuite struct {
+	suite.Suite
+	clt         *mocks.HTTPService
+	mockSession Session
+	mockURL     string
 }
 
-func TestGetHealthStatus(t *testing.T) {
-	clt := new(ClientMock)
-	mockSession := Session{
+func (suite *SessionsTestSuite) SetupTest() {
+	suite.clt = new(mocks.HTTPService)
+	suite.mockSession = Session{
 		parent: &Client{
 			BaseURL: MockURL,
 		},
-		HTTPService: clt,
+		HTTPService: suite.clt,
 	}
-
-	clt.On("Get", context.Background(), MockURL).Return(nil)
-
-	resp, err := mockSession.GetHealthStatus()
-
-	assert.Nil(t, err)
-	assert.Equal(t, reflect.TypeOf(resp).String(), "*pingaling.HealthData")
+	suite.mockURL = "http://localhost/api"
 }
 
-func TestDeleter(t *testing.T) {
-	clt := new(ClientMock)
-	mockSession := Session{
-		parent: &Client{
-			BaseURL: MockURL,
-		},
-		HTTPService: clt,
-	}
+func (suite *SessionsTestSuite) TestURL(t *testing.T) {
 
-	var mockI interface{}
+	assert.Equal(t, suite.mockURL+"/blah", suite.mockSession.url("blah"))
+}
 
-	mockI = "Test"
-	clt.On("Delete", context.Background(), MockURL).Return(nil)
+// func TestGetHealthStatus(t *testing.T) {
+// 	clt := new(ClientMock)
+// 	mockSession := Session{
+// 		parent: &Client{
+// 			BaseURL: MockURL,
+// 		},
+// 		HTTPService: clt,
+// 	}
 
-	resp := mockSession.deleter(mockI)
+// 	clt.On("Get", context.Background(), MockURL).Return(nil)
+
+// 	resp, err := mockSession.GetHealthStatus()
+
+// 	assert.Nil(t, err)
+// 	assert.Equal(t, reflect.TypeOf(resp).String(), "*pingaling.HealthData")
+// }
+
+func (suite *SessionsTestSuite) TestDeleter(t *testing.T) {
+
+	mockResp := bytes.NewBuffer([]byte(`{"Message": "Test Delete Message"}`))
+	suite.clt.On("Delete", suite.mockURL).Return(*mockResp, nil)
+
+	resp := suite.mockSession.deleter("test")
 	assert.Equal(t, "Test Delete Message", resp.(string))
 }
 
-func TestApplyManifest(t *testing.T){
-	
+func TestApplyManifest(t *testing.T) {
+
 }

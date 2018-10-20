@@ -17,11 +17,11 @@ package pingaling
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 // DefaultBaseURL is where pingaling expects API calls
@@ -35,9 +35,9 @@ type Client struct {
 
 // HTTPService allow session features to call client functions
 type HTTPService interface {
-	Get(context.Context, string, interface{}) error
-	Delete(context.Context, string, interface{}) error
-	Post(context.Context, string, io.Reader) (bytes.Buffer, error)
+	Get(string) (bytes.Buffer, error)
+	Delete(string) (bytes.Buffer, error)
+	Post(string, io.Reader) (bytes.Buffer, error)
 }
 
 // CreateSession is a required for further API use.
@@ -97,46 +97,38 @@ func withCancel(ctx context.Context, client *http.Client, req *http.Request) (re
 }
 
 // Get request
-func (c *Client) Get(ctx context.Context, url string, ts interface{}) error {
+func (c *Client) Get(url string) (bytes.Buffer, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 	statusCode, b := c.doReqURL(ctx, http.MethodGet, url, nil, nil)
 	if statusCode != http.StatusOK {
-		return &ErrBadStatusCode{
+		return bytes.Buffer{}, &ErrBadStatusCode{
 			OriginalBody: b.String(),
 			Code:         statusCode,
 		}
 	}
-	// Decode response into target struct
-	if err := json.NewDecoder(&b).Decode(ts); err != nil {
-		return &ErrNotExpectedJSON{
-			OriginalBody: b.String(),
-			Err:          err,
-		}
-	}
-	return nil
+	return b, nil
 }
 
 // Delete request
-func (c *Client) Delete(ctx context.Context, url string, ts interface{}) error {
+func (c *Client) Delete(url string) (bytes.Buffer, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 	statusCode, b := c.doReqURL(ctx, http.MethodDelete, url, nil, nil)
 	if statusCode != http.StatusOK {
-		return &ErrBadStatusCode{
+		return bytes.Buffer{}, &ErrBadStatusCode{
 			OriginalBody: b.String(),
 			Code:         statusCode,
 		}
 	}
-	// Decode response into target struct
-	if err := json.NewDecoder(&b).Decode(ts); err != nil {
-		return &ErrNotExpectedJSON{
-			OriginalBody: b.String(),
-			Err:          err,
-		}
-	}
-	return nil
+	return b, nil
+
 }
 
 // Post request
-func (c *Client) Post(ctx context.Context, url string, body io.Reader) (bytes.Buffer, error) {
-
+func (c *Client) Post(url string, body io.Reader) (bytes.Buffer, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 	headers := make(map[string]string)
 	//headers["Content-Type"] = "multipart/mixed; boundary=plug_conn_test"
 	headers["Content-Type"] = "application/json"
