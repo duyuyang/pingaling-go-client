@@ -168,5 +168,5 @@ func (s *Session) ApplyManifest(doc TypeMeta) {
 	defer cancel()
 	r, err := s.parent.Post(ctx, s.url(Manifest), bytes.NewBuffer(buff))
 	CheckError(err)
-	fmt.Println(r)
+	fmt.Println(r.String())
 }

@@ -88,6 +88,18 @@ func withCancel(ctx context.Context, client *http.Client, req *http.Request) (re
 	return client.Do(req)
 }
 
+type RequestServiceGET interface {
+	Get(context.Context, string, interface{}) error
+}
+
+type RequestServiceDELETE interface {
+	Delete(context.Context, string, interface{}) error
+}
+
+type RequestServicePOST interface {
+	Post(context.Context, string, io.Reader) (bytes.Buffer, error)
+}
+
 // Get request
 func (c *Client) Get(ctx context.Context, url string, ts interface{}) error {
 	statusCode, b := c.doReqURL(ctx, http.MethodGet, url, nil, nil)
@@ -127,7 +139,7 @@ func (c *Client) Delete(ctx context.Context, url string, ts interface{}) error {
 }
 
 // Post request
-func (c *Client) Post(ctx context.Context, url string, body io.Reader) (string, error) {
+func (c *Client) Post(ctx context.Context, url string, body io.Reader) (bytes.Buffer, error) {
 
 	headers := make(map[string]string)
 	//headers["Content-Type"] = "multipart/mixed; boundary=plug_conn_test"
@@ -135,10 +147,10 @@ func (c *Client) Post(ctx context.Context, url string, body io.Reader) (string, 
 
 	statusCode, b := c.doReqURL(ctx, http.MethodPost, url, headers, body)
 	if statusCode != http.StatusCreated {
-		return "", &ErrBadStatusCode{
+		return bytes.Buffer{}, &ErrBadStatusCode{
 			OriginalBody: b.String(),
 			Code:         statusCode,
 		}
 	}
-	return b.String(), nil
+	return b, nil
 }

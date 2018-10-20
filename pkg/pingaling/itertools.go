@@ -44,6 +44,18 @@ func List(it Iter) []interface{} {
 	return arr
 }
 
+// ListIter conver interface{} to Iter
+func ListIter(i []interface{}) Iter {
+	c := make(Iter)
+	go func() {
+		for _, el := range i {
+			c <- el
+		}
+		close(c)
+	}()
+	return c
+}
+
 // StrIter returns channels of string
 func StrIter(els []string) Iter {
 	c := make(Iter)
