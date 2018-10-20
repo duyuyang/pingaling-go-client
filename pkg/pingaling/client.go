@@ -33,12 +33,19 @@ type Client struct {
 	BaseURL    string
 }
 
+type HTTPService interface {
+	Get(context.Context, string, interface{}) error
+	Delete(context.Context, string, interface{}) error
+	Post(context.Context, string, io.Reader) (bytes.Buffer, error)
+}
+
 // CreateSession is a required for further API use.
 func (c *Client) CreateSession() (*Session, error) {
 	var v createSessionResp
 	return &Session{
-		parent:    c,
-		SessionID: v.SessionID,
+		parent:      c,
+		SessionID:   v.SessionID,
+		HTTPService: c,
 	}, nil
 }
 
@@ -86,18 +93,6 @@ func (c *Client) doReqURL(ctx context.Context, method string, url string,
 func withCancel(ctx context.Context, client *http.Client, req *http.Request) (resp *http.Response, err error) {
 	req.Cancel = ctx.Done()
 	return client.Do(req)
-}
-
-type RequestServiceGET interface {
-	Get(context.Context, string, interface{}) error
-}
-
-type RequestServiceDELETE interface {
-	Delete(context.Context, string, interface{}) error
-}
-
-type RequestServicePOST interface {
-	Post(context.Context, string, io.Reader) (bytes.Buffer, error)
 }
 
 // Get request

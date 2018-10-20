@@ -34,8 +34,9 @@ const (
 
 // Session establish connection to API
 type Session struct {
-	parent    *Client
-	SessionID string
+	parent      *Client
+	SessionID   string
+	HTTPService HTTPService
 }
 
 func (s *Session) url(endpoint string) string {
@@ -48,7 +49,7 @@ func (s *Session) GetHealthStatus() (*HealthData, error) {
 	var r HealthData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.Get(ctx, s.url(HealthSummary), &r); err != nil {
+	if err := s.HTTPService.Get(ctx, s.url(HealthSummary), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -60,7 +61,7 @@ func (s *Session) GetEndpoints(epName string) (*EndpointData, error) {
 	var r EndpointData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.Get(ctx, s.url(Endpoints+"/"+epName), &r); err != nil {
+	if err := s.HTTPService.Get(ctx, s.url(Endpoints+"/"+epName), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -73,7 +74,7 @@ func (s *Session) GetIncidents() (*IncidentData, error) {
 	var r IncidentData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.Get(ctx, s.url(Incidents), &r); err != nil {
+	if err := s.HTTPService.Get(ctx, s.url(Incidents), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -86,7 +87,7 @@ func (s *Session) GetNotificationChannels() (*NotificationChannelData, error) {
 	var r NotificationChannelData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.Get(ctx, s.url(NotificationChannels), &r); err != nil {
+	if err := s.HTTPService.Get(ctx, s.url(NotificationChannels), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -99,7 +100,7 @@ func (s *Session) GetNotificationPolicies() (*NotificationPolicyData, error) {
 	var r NotificationPolicyData
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if err := s.parent.Get(ctx, s.url(NotificationPolicies), &r); err != nil {
+	if err := s.HTTPService.Get(ctx, s.url(NotificationPolicies), &r); err != nil {
 		return nil, err
 	}
 	return &r, nil
@@ -150,7 +151,9 @@ func (s *Session) deleter(p interface{}) interface{} {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 
 	defer cancel()
-	err := s.parent.Delete(ctx, s.url(p.(string)), &r)
+	//err := s.parent.Delete(ctx, s.url(p.(string)), &r)
+	// err := s.serviceDELETE.Delete(ctx, s.url(p.(string)), &r)
+	err := s.HTTPService.Delete(ctx, s.url(p.(string)), &r)
 	CheckError(err)
 	return r.Message
 
@@ -166,7 +169,8 @@ func (s *Session) ApplyManifest(doc TypeMeta) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	r, err := s.parent.Post(ctx, s.url(Manifest), bytes.NewBuffer(buff))
+	// r, err := s.parent.Post(ctx, s.url(Manifest), bytes.NewBuffer(buff))
+	r, err := s.HTTPService.Post(ctx, s.url(Manifest), bytes.NewBuffer(buff))
 	CheckError(err)
 	fmt.Println(r.String())
 }
