@@ -17,38 +17,14 @@ package pingaling
 // Iter is channel of interface{}
 type Iter chan interface{}
 
-// Predicate is filter function
-type Predicate func(interface{}) bool
-
 // Mapper map Iter to a function
 type Mapper func(interface{}) interface{}
 
-// New returns a channel of interface
+// New returns chan of variadic interfaces
 func New(els ...interface{}) Iter {
 	c := make(Iter)
 	go func() {
 		for _, el := range els {
-			c <- el
-		}
-		close(c)
-	}()
-	return c
-}
-
-// List convert Iter to Interface{}
-func List(it Iter) []interface{} {
-	arr := make([]interface{}, 0, 1)
-	for el := range it {
-		arr = append(arr, el)
-	}
-	return arr
-}
-
-// ListIter conver interface{} to Iter
-func ListIter(i []interface{}) Iter {
-	c := make(Iter)
-	go func() {
-		for _, el := range i {
 			c <- el
 		}
 		close(c)
@@ -74,20 +50,6 @@ func Map(fn Mapper, it Iter) Iter {
 	go func() {
 		for el := range it {
 			c <- fn(el)
-		}
-		close(c)
-	}()
-	return c
-}
-
-// Filter out any elements where pred(el) == false
-func Filter(pred Predicate, it Iter) Iter {
-	c := make(Iter)
-	go func() {
-		for el := range it {
-			if keep := pred(el); keep {
-				c <- el
-			}
 		}
 		close(c)
 	}()

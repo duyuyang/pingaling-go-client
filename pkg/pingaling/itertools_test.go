@@ -1,5 +1,3 @@
-// +build integration
-
 // Copyright © 2018 The Pingaling Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main_test
+package pingaling
 
 import (
-	"bytes"
-	"os/exec"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCmdVersion(t *testing.T) {
+func TestStrIter(t *testing.T) {
 
-	cmd := exec.Command("./pingaling", "version")
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
+	chl := StrIter([]string{"foo", "bar"})
 
-	err := cmd.Run()
+	assert.Equal(t, <-chl, "foo")
+	assert.Equal(t, <-chl, "bar")
+}
 
-	assert.Nil(t, err)
-	assert.Equal(t, "0.5.0\n", out.String())
-
+func TestMap(t *testing.T) {
+	mapper := func(i interface{}) interface{} {
+		return strings.ToUpper(i.(string))
+	}
+	newMap := Map(mapper, New("foo", "bar", "zoo"))
+	assert.Equal(t, <-newMap, "FOO")
+	assert.Equal(t, <-newMap, "BAR")
+	assert.Equal(t, <-newMap, "ZOO")
 }

@@ -1,5 +1,3 @@
-// +build integration
-
 // Copyright © 2018 The Pingaling Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main_test
+package pingaling
 
 import (
-	"bytes"
-	"os/exec"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCmdVersion(t *testing.T) {
+func TestGetServerURI(t *testing.T) {
 
-	cmd := exec.Command("./pingaling", "version")
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-
-	err := cmd.Run()
-
-	assert.Nil(t, err)
-	assert.Equal(t, "0.5.0\n", out.String())
-
+	cfg := Config{
+		CurrentServer: "localhostv1",
+		Servers: []Server{
+			Server{
+				URI:  "http://localhost/api/v1",
+				Name: "localhostv1",
+			},
+			Server{
+				URI:  "http://localhost/api/v2",
+				Name: "localhostv2",
+			},
+		},
+	}
+	actual := cfg.GetServerURI()
+	assert.Equal(t, actual, "http://localhost/api/v1")
 }

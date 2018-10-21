@@ -1,5 +1,3 @@
-// +build integration
-
 // Copyright © 2018 The Pingaling Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main_test
+package pingaling
 
 import (
-	"bytes"
-	"os/exec"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCmdVersion(t *testing.T) {
-
-	cmd := exec.Command("./pingaling", "version")
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-
-	err := cmd.Run()
-
+func TestSplitYAMLDocuments(t *testing.T) {
+	b := []byte(`---
+apiVersion: 1
+kind: foo
+spec:
+  name: bar
+---
+apiVersion: 1
+kind: zoo
+spec:
+  name: cat`)
+	tm, err := SplitYAMLDocuments(b)
 	assert.Nil(t, err)
-	assert.Equal(t, "0.5.0\n", out.String())
+	for _, i := range tm {
+		assert.Equal(t, 1, i.APIVersion)
+	}
+}
 
+func TestYAMLDecoder(t *testing.T) {
+
+	b := []byte(`---
+  name: bar`)
+	type into struct {
+		Name string `yaml:"name" json:"name"`
+	}
+	var r into
+	err := YAMLDecoder(b, &r)
+	assert.Nil(t, err)
+	assert.Equal(t, "bar", r.Name)
 }
