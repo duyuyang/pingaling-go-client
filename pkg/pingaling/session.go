@@ -16,10 +16,8 @@ package pingaling
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 )
 
 const (
@@ -47,24 +45,29 @@ func (s *Session) url(endpoint string) string {
 // GetHealthStatus return Health check data
 func (s *Session) GetHealthStatus() (*HealthData, error) {
 	var r HealthData
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	if err := s.HTTPService.Get(ctx, s.url(HealthSummary), &r); err != nil {
+
+	if b, err := s.HTTPService.Get(s.url(HealthSummary)); err != nil {
 		return nil, err
+	} else {
+		err := JSONDecoder(b, &r)
+		CheckError(err)
+		return &r, nil
 	}
-	return &r, nil
+
 }
 
 // GetEndpoints return specific endpoint data
 func (s *Session) GetEndpoints(epName string) (*EndpointData, error) {
 
 	var r EndpointData
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	if err := s.HTTPService.Get(ctx, s.url(Endpoints+"/"+epName), &r); err != nil {
+
+	if b, err := s.HTTPService.Get(s.url(Endpoints + "/" + epName)); err != nil {
 		return nil, err
+	} else {
+		err := JSONDecoder(b, &r)
+		CheckError(err)
+		return &r, nil
 	}
-	return &r, nil
 
 }
 
@@ -72,12 +75,14 @@ func (s *Session) GetEndpoints(epName string) (*EndpointData, error) {
 func (s *Session) GetIncidents() (*IncidentData, error) {
 
 	var r IncidentData
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	if err := s.HTTPService.Get(ctx, s.url(Incidents), &r); err != nil {
+
+	if b, err := s.HTTPService.Get(s.url(Incidents)); err != nil {
 		return nil, err
+	} else {
+		err := JSONDecoder(b, &r)
+		CheckError(err)
+		return &r, nil
 	}
-	return &r, nil
 
 }
 
@@ -85,12 +90,14 @@ func (s *Session) GetIncidents() (*IncidentData, error) {
 func (s *Session) GetNotificationChannels() (*NotificationChannelData, error) {
 
 	var r NotificationChannelData
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	if err := s.HTTPService.Get(ctx, s.url(NotificationChannels), &r); err != nil {
+
+	if b, err := s.HTTPService.Get(s.url(NotificationChannels)); err != nil {
 		return nil, err
+	} else {
+		err := JSONDecoder(b, &r)
+		CheckError(err)
+		return &r, nil
 	}
-	return &r, nil
 
 }
 
@@ -98,12 +105,14 @@ func (s *Session) GetNotificationChannels() (*NotificationChannelData, error) {
 func (s *Session) GetNotificationPolicies() (*NotificationPolicyData, error) {
 
 	var r NotificationPolicyData
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	if err := s.HTTPService.Get(ctx, s.url(NotificationPolicies), &r); err != nil {
+
+	if b, err := s.HTTPService.Get(s.url(NotificationPolicies)); err != nil {
 		return nil, err
+	} else {
+		err := JSONDecoder(b, &r)
+		CheckError(err)
+		return &r, nil
 	}
-	return &r, nil
 
 }
 
@@ -148,26 +157,26 @@ func (s *Session) deleteIter(pather func(i interface{}) interface{}, name []stri
 func (s *Session) deleter(p interface{}) interface{} {
 	var r DeleteMsg
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-
-	defer cancel()
-	err := s.HTTPService.Delete(ctx, s.url(p.(string)), &r)
-	CheckError(err)
-	return r.Message
+	if b, err := s.HTTPService.Delete(s.url(p.(string))); err != nil {
+		return nil
+	} else {
+		err = JSONDecoder(b, &r)
+		CheckError(err)
+		return r.Message
+	}
 
 }
 
 // ApplyManifest post manifest to API to create resource
-func (s *Session) ApplyManifest(doc TypeMeta) {
+func (s *Session) ApplyManifest(doc TypeMeta) (bytes.Buffer, error) {
 
 	manifest := ManifestReq{
 		Manifest: doc,
 	}
 	buff, _ := json.Marshal(&manifest)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	r, err := s.HTTPService.Post(ctx, s.url(Manifest), bytes.NewBuffer(buff))
-	CheckError(err)
-	fmt.Println(r.String())
+	r, err := s.HTTPService.Post(s.url(Manifest), bytes.NewBuffer(buff))
+
+	return r, err
+
 }
