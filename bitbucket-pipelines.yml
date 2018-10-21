@@ -11,4 +11,4 @@ pipelines:
           - go get ./...
           - go get github.com/stretchr/testify
           - go build -o pingaling
-          - go test ./... -v
+          - go test ./... -timeout 120s -v -cover
