@@ -42,7 +42,7 @@ func (suite *SessionsTestSuite) SetupTest() {
 		},
 		HTTPService: suite.clt,
 	}
-	suite.mockURL = "http://localhost/api"
+	suite.mockURL = MockURL
 }
 
 func TestSessionsTestSuite(t *testing.T) {
