@@ -1,4 +1,4 @@
-// +build acceptance
+// +build integration
 
 package main_test
 
