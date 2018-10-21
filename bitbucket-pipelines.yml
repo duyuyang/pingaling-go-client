@@ -6,7 +6,7 @@ pipelines:
         script:
           - PACKAGE_PATH="${GOPATH}/src/bitbucket.org/pingaling-monitoring/${BITBUCKET_REPO_SLUG}"
           - mkdir -p "${PACKAGE_PATH}"
-          - ln -s ${PWD} ${PACKAGE_PATH}
+          - tar -cO --exclude-vcs --exclude=bitbucket-pipelines.yml . | tar -xv -C "${PACKAGE_PATH}"
           - cd "${PACKAGE_PATH}"
           - go get ./...
           - go get github.com/stretchr/testify
