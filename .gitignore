@@ -29,3 +29,6 @@
 # Vim-related files
 [._]*.s[a-w][a-z]
 [._]s[a-w][a-z]
+
+# Test coverage
+coverage.out
