@@ -27,14 +27,17 @@ import (
 
 const separator = "---"
 
+// Reader interface for Read()
 type Reader interface {
 	Read() ([]byte, error)
 }
 
+// YAMLReader struct for reader
 type YAMLReader struct {
 	reader Reader
 }
 
+// NewYAMLReader returns YAMLReader struct
 func NewYAMLReader(r *bufio.Reader) *YAMLReader {
 	return &YAMLReader{
 		reader: &LineReader{reader: r},
@@ -75,6 +78,7 @@ func (r *YAMLReader) Read() ([]byte, error) {
 	}
 }
 
+// LineReader struct
 type LineReader struct {
 	reader *bufio.Reader
 }
@@ -97,6 +101,7 @@ func (r *LineReader) Read() ([]byte, error) {
 	return buffer.Bytes(), err
 }
 
+// SplitYAMLDocuments read multiple YAML docs to []TypeMeta struct
 func SplitYAMLDocuments(ymlBytes []byte) ([]TypeMeta, error) {
 	buf := bytes.NewBuffer(ymlBytes)
 	reader := NewYAMLReader(bufio.NewReader(buf))

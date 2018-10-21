@@ -16,6 +16,7 @@ package pingaling
 
 import "fmt"
 
+// CheckError Panic error output
 func CheckError(err error) {
 	if err != nil {
 		panic(err)

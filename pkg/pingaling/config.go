@@ -26,6 +26,7 @@ type Config struct {
 	Servers       []Server `json:"servers" yaml:"servers"`
 }
 
+// Server is the API endpoint
 type Server struct {
 	URI  string `json:"server" yaml:"server"`
 	Name string `json:"name" yaml:"name"`
