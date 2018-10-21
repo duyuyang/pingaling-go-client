@@ -1,0 +1,7 @@
+image: golang:onbuild
+pipelines:
+  default:
+    - step:
+        script:
+          - go get ./...
+          - go test ./... -v
