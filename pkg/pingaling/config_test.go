@@ -15,6 +15,7 @@
 package pingaling
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,4 +38,14 @@ func TestGetServerURI(t *testing.T) {
 	}
 	actual := cfg.GetServerURI()
 	assert.Equal(t, actual, "http://localhost/api/v1")
+}
+
+func TestNewConfig(t *testing.T) {
+	cfgFile := filepath.Join("testdata", "config.yml")
+
+	var cfgStruct Config
+
+	NewConfig(cfgFile, &cfgStruct)
+	assert.Equal(t, "localhost", cfgStruct.CurrentServer)
+
 }
