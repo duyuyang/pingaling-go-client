@@ -58,8 +58,13 @@ func (c *Client) urlBase(endpoint string) string {
 	return fmt.Sprintf("%s/%s", base, endpoint)
 }
 
-func (c *Client) doReqURL(ctx context.Context, method string, url string,
-	headers map[string]string, body io.Reader) (statusCode int, b bytes.Buffer) {
+func (c *Client) doReqURL(
+	ctx context.Context,
+	method string,
+	url string,
+	headers map[string]string,
+	body io.Reader,
+) (statusCode int, b bytes.Buffer) {
 
 	// Prepare request
 	req, err := http.NewRequest(method, url, body)
@@ -91,7 +96,11 @@ func (c *Client) doReqURL(ctx context.Context, method string, url string,
 
 }
 
-func withCancel(ctx context.Context, client *http.Client, req *http.Request) (resp *http.Response, err error) {
+func withCancel(
+	ctx context.Context,
+	client *http.Client,
+	req *http.Request,
+) (resp *http.Response, err error) {
 	req.Cancel = ctx.Done()
 	return client.Do(req)
 }
