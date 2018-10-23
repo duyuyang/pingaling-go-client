@@ -10,7 +10,6 @@ pipelines:
           - cd "${PACKAGE_PATH}"
           - go get ./...
           - go get github.com/stretchr/testify
-          - cd "${PACKAGE_PATH}/pkg/pingaling"
-          - go test -race -coverprofile=profile.out -covermode=atomic
+          - go test ./... -race -coverprofile=profile.out -covermode=atomic
           - bash <(curl -s https://codecov.io/bash) -t ecd6078a-0484-4805-9d2a-6723e1043ef7
 
