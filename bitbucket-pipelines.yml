@@ -10,5 +10,6 @@ pipelines:
           - cd "${PACKAGE_PATH}"
           - go get ./...
           - go get github.com/stretchr/testify
-          - go build -o pingaling
-          - go test ./... -timeout 120s -v -cover
+          - cd "${PACKAGE_PATH}/pkg/pingaling"
+          - go test -timeout 120s -v -cover -coverprofile=coverage.txt -covermode=atomic
+          - bash <(curl -s https://codecov.io/bash) -t ecd6078a-0484-4805-9d2a-6723e1043ef7
