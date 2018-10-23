@@ -12,4 +12,5 @@ pipelines:
           - go get github.com/stretchr/testify
           - cd "${PACKAGE_PATH}/pkg/pingaling"
           - go test -race -coverprofile=profile.out -covermode=atomic
-          - curl -s https://codecov.io/bash | bash -s - -t ecd6078a-0484-4805-9d2a-6723e1043ef7
+          - bash <(curl -s https://codecov.io/bash) -t ecd6078a-0484-4805-9d2a-6723e1043ef7
+
