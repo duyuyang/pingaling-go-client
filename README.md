@@ -1,5 +1,7 @@
 # Pingaling go-client
 
+[![GoDoc](https://godoc.org/bitbucket.org/pingaling-monitoring/client/pkg/pingaling?status.svg)](https://godoc.org/bitbucket.org/pingaling-monitoring/client/pkg/pingaling)
+
 ## To start developing
 
 ```shell
