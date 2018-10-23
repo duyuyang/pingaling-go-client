@@ -10,6 +10,6 @@ pipelines:
           - cd "${PACKAGE_PATH}"
           - go get ./...
           - go get github.com/stretchr/testify
-          - go test ./... -race -coverprofile=profile.out -covermode=atomic
+          - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
           - bash <(curl -s https://codecov.io/bash) -t ecd6078a-0484-4805-9d2a-6723e1043ef7
 
