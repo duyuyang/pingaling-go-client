@@ -119,7 +119,10 @@ func SplitYAMLDocuments(ymlBytes []byte) ([]TypeMeta, error) {
 		// Deserialize the TypeMeta information of this byte slice
 
 		if err := yaml.Unmarshal(b, &typeMetaInfo); err != nil {
-			return nil, err
+			return nil, &ErrNotExpectedYAML{
+				OriginalBody: string(b),
+				Err:          err,
+			}
 		}
 		docs = append(docs, typeMetaInfo)
 	}
@@ -130,10 +133,16 @@ func SplitYAMLDocuments(ymlBytes []byte) ([]TypeMeta, error) {
 // YAMLDecoder unmarshal []byte to struct
 func YAMLDecoder(b []byte, into interface{}) error {
 	if toJSON, err := yaml.YAMLToJSON(b); err != nil {
-		return err
+		return &ErrNotExpectedYAML{
+			OriginalBody: string(b),
+			Err:          err,
+		}
 	} else {
 		if err := json.Unmarshal(toJSON, into); err != nil {
-			return err
+			return &ErrNotExpectedJSON{
+				OriginalBody: string(b),
+				Err:          err,
+			}
 		}
 	}
 	return nil

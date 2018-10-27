@@ -22,6 +22,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // DefaultBaseURL is where pingaling expects API calls
@@ -64,18 +66,22 @@ func (c *Client) doReqURL(
 	url string,
 	headers map[string]string,
 	body io.Reader,
-) (statusCode int, b bytes.Buffer) {
+) (statusCode int, b bytes.Buffer, err error) {
 
 	// Prepare request
 	req, err := http.NewRequest(method, url, body)
-	CheckError(err)
+	if err != nil {
+		return 500, bytes.Buffer{}, errors.Wrap(err, "doReqURL prepare request failed")
+	}
 	// Set headers
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
 	// make request
 	resp, err := withCancel(ctx, &c.HTTPClient, req)
-	CheckError(err)
+	if err != nil {
+		return 500, bytes.Buffer{}, errors.Wrap(err, "doReqURL make request failed")
+	}
 
 	// drain and close the response body before return
 	defer func() {
@@ -90,7 +96,9 @@ func (c *Client) doReqURL(
 
 	// Make a copy of the response body
 	_, err = io.Copy(&b, resp.Body)
-	CheckError(err)
+	if err != nil {
+		return 500, bytes.Buffer{}, errors.Wrap(err, "doReqURL copy body failed")
+	}
 
 	return
 
@@ -109,7 +117,10 @@ func withCancel(
 func (c *Client) Get(url string) (bytes.Buffer, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	statusCode, b := c.doReqURL(ctx, http.MethodGet, url, nil, nil)
+	statusCode, b, err := c.doReqURL(ctx, http.MethodGet, url, nil, nil)
+	if err != nil {
+		return bytes.Buffer{}, errors.Wrap(err, "client Get request failed")
+	}
 	if statusCode != http.StatusOK {
 		return bytes.Buffer{}, &ErrBadStatusCode{
 			OriginalBody: b.String(),
@@ -123,7 +134,10 @@ func (c *Client) Get(url string) (bytes.Buffer, error) {
 func (c *Client) Delete(url string) (bytes.Buffer, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	statusCode, b := c.doReqURL(ctx, http.MethodDelete, url, nil, nil)
+	statusCode, b, err := c.doReqURL(ctx, http.MethodDelete, url, nil, nil)
+	if err != nil {
+		return bytes.Buffer{}, errors.Wrap(err, "client Delete request failed")
+	}
 	if statusCode != http.StatusOK {
 		return bytes.Buffer{}, &ErrBadStatusCode{
 			OriginalBody: b.String(),
@@ -142,7 +156,10 @@ func (c *Client) Post(url string, body io.Reader) (bytes.Buffer, error) {
 	//headers["Content-Type"] = "multipart/mixed; boundary=plug_conn_test"
 	headers["Content-Type"] = "application/json"
 
-	statusCode, b := c.doReqURL(ctx, http.MethodPost, url, headers, body)
+	statusCode, b, err := c.doReqURL(ctx, http.MethodPost, url, headers, body)
+	if err != nil {
+		return bytes.Buffer{}, errors.Wrap(err, "client Post request failed")
+	}
 	if statusCode != http.StatusCreated {
 		return bytes.Buffer{}, &ErrBadStatusCode{
 			OriginalBody: b.String(),

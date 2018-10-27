@@ -45,7 +45,7 @@ func TestDoReqURL(t *testing.T) {
 		"foo": "bar",
 		"zoo": "cat",
 	}
-	statusCode, b := c.doReqURL(ctx, http.MethodGet, ts.URL, headers, nil)
+	statusCode, b, _ := c.doReqURL(ctx, http.MethodGet, ts.URL, headers, nil)
 
 	assert.Equal(t, statusCode, 200)
 	assert.Equal(t, "{\"fake json string\"}\n", b.String())

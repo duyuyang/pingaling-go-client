@@ -18,6 +18,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -46,13 +48,16 @@ func (s *Session) url(endpoint string) string {
 func (s *Session) GetHealthStatus() (*HealthData, error) {
 	var r HealthData
 
-	if b, err := s.HTTPService.Get(s.url(HealthSummary)); err != nil {
-		return nil, err
-	} else {
-		err := JSONDecoder(b, &r)
-		CheckError(err)
-		return &r, nil
+	b, err := s.HTTPService.Get(s.url(HealthSummary))
+	if err != nil {
+		return nil, errors.Wrap(err, "GetHealthStatus Get request failed")
 	}
+	err = JSONDecoder(b, &r)
+	if err != nil {
+		return nil, errors.Wrap(err, "GetHealthStatus failed to decode JSON")
+	}
+
+	return &r, nil
 
 }
 
@@ -61,13 +66,15 @@ func (s *Session) GetEndpoints(epName string) (*EndpointData, error) {
 
 	var r EndpointData
 
-	if b, err := s.HTTPService.Get(s.url(Endpoints + "/" + epName)); err != nil {
-		return nil, err
-	} else {
-		err := JSONDecoder(b, &r)
-		CheckError(err)
-		return &r, nil
+	b, err := s.HTTPService.Get(s.url(Endpoints + "/" + epName))
+	if err != nil {
+		return nil, errors.Wrap(err, "GetEndpoint Get request failed")
 	}
+	err = JSONDecoder(b, &r)
+	if err != nil {
+		return nil, errors.Wrap(err, "GetEndpoints failed to decode JSON")
+	}
+	return &r, nil
 
 }
 
@@ -76,13 +83,15 @@ func (s *Session) GetIncidents() (*IncidentData, error) {
 
 	var r IncidentData
 
-	if b, err := s.HTTPService.Get(s.url(Incidents)); err != nil {
-		return nil, err
-	} else {
-		err := JSONDecoder(b, &r)
-		CheckError(err)
-		return &r, nil
+	b, err := s.HTTPService.Get(s.url(Incidents))
+	if err != nil {
+		return nil, errors.Wrap(err, "GetIncidents Get request failed")
 	}
+	err = JSONDecoder(b, &r)
+	if err != nil {
+		return nil, errors.Wrap(err, "GetIncidents failed to decode JSON")
+	}
+	return &r, nil
 
 }
 
@@ -91,13 +100,15 @@ func (s *Session) GetNotificationChannels() (*NotificationChannelData, error) {
 
 	var r NotificationChannelData
 
-	if b, err := s.HTTPService.Get(s.url(NotificationChannels)); err != nil {
-		return nil, err
-	} else {
-		err := JSONDecoder(b, &r)
-		CheckError(err)
-		return &r, nil
+	b, err := s.HTTPService.Get(s.url(NotificationChannels))
+	if err != nil {
+		return nil, errors.Wrap(err, "GetNotificationChannels Get request failed")
 	}
+	err = JSONDecoder(b, &r)
+	if err != nil {
+		return nil, errors.Wrap(err, "GetNotificationChannels failed to decode JSON")
+	}
+	return &r, nil
 
 }
 
@@ -106,13 +117,15 @@ func (s *Session) GetNotificationPolicies() (*NotificationPolicyData, error) {
 
 	var r NotificationPolicyData
 
-	if b, err := s.HTTPService.Get(s.url(NotificationPolicies)); err != nil {
-		return nil, err
-	} else {
-		err := JSONDecoder(b, &r)
-		CheckError(err)
-		return &r, nil
+	b, err := s.HTTPService.Get(s.url(NotificationPolicies))
+	if err != nil {
+		return nil, errors.Wrap(err, "GetNotificationPolicies Get request failed")
 	}
+	err = JSONDecoder(b, &r)
+	if err != nil {
+		return nil, errors.Wrap(err, "GetNotificationPolicies failed to decode JSON")
+	}
+	return &r, nil
 
 }
 
@@ -149,21 +162,27 @@ func (s *Session) DeleteNotificationPolicies(name []string) {
 func (s *Session) deleteIter(pather func(i interface{}) interface{}, name []string) {
 
 	for i := range Map(pather, StrIter(name)) {
-		fmt.Println(Message, s.deleter(i))
+		if m, err := s.deleter(i); err == nil {
+			fmt.Println(Message, m)
+		} else {
+			fmt.Printf("Failed to delete %v", i.(string))
+		}
 	}
 
 }
 
-func (s *Session) deleter(p interface{}) interface{} {
+func (s *Session) deleter(p interface{}) (interface{}, error) {
 	var r DeleteMsg
 
-	if b, err := s.HTTPService.Delete(s.url(p.(string))); err != nil {
-		return nil
-	} else {
-		err = JSONDecoder(b, &r)
-		CheckError(err)
-		return r.Message
+	b, err := s.HTTPService.Delete(s.url(p.(string)))
+	if err != nil {
+		return nil, errors.Wrap(err, "deleter Delete request failed")
 	}
+	err = JSONDecoder(b, &r)
+	if err != nil {
+		return nil, errors.Wrap(err, "deleter failed to decode JSON")
+	}
+	return r.Message, nil
 
 }
 
@@ -173,10 +192,17 @@ func (s *Session) ApplyManifest(doc TypeMeta) (bytes.Buffer, error) {
 	manifest := ManifestReq{
 		Manifest: doc,
 	}
-	buff, _ := json.Marshal(&manifest)
-
+	buff, err := json.Marshal(&manifest)
+	if err != nil {
+		return bytes.Buffer{}, &ErrNotExpectedJSON{
+			OriginalBody: string(buff),
+			Err:          err,
+		}
+	}
 	r, err := s.HTTPService.Post(s.url(Manifest), bytes.NewBuffer(buff))
-
-	return r, err
+	if err != nil {
+		return bytes.Buffer{}, errors.Wrap(err, "ApplyManifest Post request failed")
+	}
+	return r, nil
 
 }
