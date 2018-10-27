@@ -19,6 +19,7 @@ Pingaling CLI is a tool to setup your monitoring needs. For example:
 ### SEE ALSO
 
 * [pingaling apply](pingaling_apply.md)	 - Apply a configuration to a resource by filename
+* [pingaling completion](pingaling_completion.md)	 - Generates shell completion scripts
 * [pingaling config](pingaling_config.md)	 - Modify $HOME/.pingaling file
 * [pingaling delete](pingaling_delete.md)	 - Delete resources by name
 * [pingaling get](pingaling_get.md)	 - Display one or many resources
