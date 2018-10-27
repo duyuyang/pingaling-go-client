@@ -14,6 +14,11 @@ $ go get ./...              # install dependencies
 $ go build -o pingaling .   # build binary
 ```
 
+## CMD document
+
+* [pingaling](doc/pingaling.md) - command line user guide
+
+
 ## Troubleshooting
 
 Bitbucket access 403
