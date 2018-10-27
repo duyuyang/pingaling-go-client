@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"errors"
+	"log"
 
 	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
 	"github.com/spf13/cobra"
@@ -46,7 +47,7 @@ var getHealthCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if h, err := session.GetHealthStatus(); err != nil {
-			panic(err)
+			log.Fatalf("failed to get health status %v", err)
 		} else {
 			pl.TableHealth(h.Data)
 		}
@@ -69,7 +70,7 @@ var getEndpointCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if ep, err := session.GetEndpoints(args[0]); err != nil {
-			panic(err)
+			log.Fatalf("failed to get endpoint %v", err)
 		} else {
 			pl.TableEndpoints(ep.Data)
 		}
@@ -87,7 +88,7 @@ var getEndpointsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Return health summary for now
 		if h, err := session.GetHealthStatus(); err != nil {
-			panic(err)
+			log.Fatalf("failed to get endpoints %v", err)
 		} else {
 			pl.TableHealth(h.Data)
 		}
@@ -104,7 +105,7 @@ var getIncidentsCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		if i, err := session.GetIncidents(); err != nil {
-			panic(err)
+			log.Fatalf("failed to get incidents %v", err)
 		} else {
 			pl.TableIncidents(i.Data)
 		}
@@ -124,7 +125,7 @@ var getNotificationChannelsCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		if nc, err := session.GetNotificationChannels(); err != nil {
-			panic(err)
+			log.Fatalf("failed to get notification channels %v", err)
 		} else {
 			pl.TableNotificationChannels(nc.Data)
 		}
@@ -145,7 +146,7 @@ var getNotificationPoliciesCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		if nc, err := session.GetNotificationPolicies(); err != nil {
-			panic(err)
+			log.Fatalf("failed to get notification policies %v", err)
 		} else {
 			pl.TableNotificationPolicies(nc.Data)
 		}
