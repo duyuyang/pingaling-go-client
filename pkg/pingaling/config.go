@@ -16,8 +16,9 @@ package pingaling
 
 import (
 	"io/ioutil"
-
-	homedir "github.com/mitchellh/go-homedir"
+	"log"
+	"os"
+	"runtime"
 )
 
 // Config is a struct of configuration file data
@@ -55,18 +56,34 @@ func NewConfig(cfgFile string, into interface{}) {
 	if cfgFile != "" {
 		// Use config file from the flag.
 		content, err = ioutil.ReadFile(cfgFile)
-		CheckError(err)
+		if err != nil {
+			log.Fatalf("failed to read config file: %v, %v", cfgFile, err)
+		}
 
 	} else {
 		// Find home directory.
-		home, err := homedir.Dir()
-		CheckError(err)
+		//home, err := homedir.Dir()
+		home := homeDir()
+
 		// Search config in home directory with name ".pingaling".
 		content, err = ioutil.ReadFile(home + "/.pingaling")
-		CheckError(err)
+		if err != nil {
+			log.Fatalf("failed to read config file: %v, %v", home+"/.pingaling", err)
+		}
 	}
 
 	if err = YAMLDecoder(content, into); err != nil {
-		panic(err)
+		log.Fatalf("failed to decode YAML: %v, %v", content, err)
 	}
+}
+
+func homeDir() string {
+	if runtime.GOOS == "windows" {
+		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
+		if home == "" {
+			home = os.Getenv("USERPROFILE")
+		}
+		return home
+	}
+	return os.Getenv("HOME")
 }

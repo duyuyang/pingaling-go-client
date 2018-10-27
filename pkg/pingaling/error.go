@@ -16,17 +16,24 @@ package pingaling
 
 import "fmt"
 
-// CheckError Panic error output
-func CheckError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 // ErrNotExpectedJSON is returned when the API response isn't expected JSON
 type ErrNotExpectedJSON struct {
 	OriginalBody string
 	Err          error
+}
+
+func (e *ErrNotExpectedJSON) Error() string {
+	return fmt.Sprintf("Unexpected JSON: %s from %s", e.Err.Error(), e.OriginalBody)
+}
+
+// ErrNotExpectedYAML is returned when the content isn't expected YAML
+type ErrNotExpectedYAML struct {
+	OriginalBody string
+	Err          error
+}
+
+func (e *ErrNotExpectedYAML) Error() string {
+	return fmt.Sprintf("Unexpected YAML: %s from %s", e.Err.Error(), e.OriginalBody)
 }
 
 // ErrBadStatusCode is returned when the API returns a non 200 error code
@@ -37,8 +44,4 @@ type ErrBadStatusCode struct {
 
 func (e *ErrBadStatusCode) Error() string {
 	return fmt.Sprintf("Invalid status code: %d", e.Code)
-}
-
-func (e *ErrNotExpectedJSON) Error() string {
-	return fmt.Sprintf("Unexpected JSON: %s from %s", e.Err.Error(), e.OriginalBody)
 }

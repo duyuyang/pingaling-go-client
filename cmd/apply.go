@@ -17,6 +17,7 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 
 	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
 	"github.com/spf13/cobra"
@@ -36,16 +37,16 @@ var applyCmd = &cobra.Command{
 
 		// Readfile
 		if content, err := ioutil.ReadFile(filename); err != nil {
-			panic(err)
+			log.Fatalf("failed to read manifest: %v, %v", filename, err)
 		} else {
 			// Split the YAML base on ---
 			if docs, err := pl.SplitYAMLDocuments(content); err != nil {
-				panic(err)
+				log.Fatalf("failed to split manifests: %v, %v", content, err)
 			} else {
 				// Post manifest to API
 				for _, d := range docs {
 					if buf, err := session.ApplyManifest(d); err != nil {
-						panic(err)
+						log.Printf("failed to create resource %v", err)
 					} else {
 						fmt.Println(buf.String())
 					}

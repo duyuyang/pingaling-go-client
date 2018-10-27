@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"bitbucket.org/pingaling-monitoring/client/pkg/pingaling/mocks"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -103,6 +104,28 @@ func (suite *SessionsTestSuite) TestGetEndpoints() {
 	assert.Equal(suite.T(), reflect.TypeOf(resp).String(), "*pingaling.EndpointData")
 	assert.NotEmpty(suite.T(), resp.Data)
 	assert.Nil(suite.T(), err)
+
+}
+
+func (suite *SessionsTestSuite) TestGetEndpointsJSONError() {
+
+	mockResp := bytes.NewBuffer([]byte(`
+	{
+		"data": {
+			"url": "https://service.svc.local/healthz",
+			"next_check": null,
+			"name":
+			"description":
+		}
+	}`))
+
+	suite.clt.On("Get", suite.mockURL+"/endpoints/my-service21").Return(*mockResp, nil)
+
+	_, err := suite.mockSession.GetEndpoints("my-service21")
+
+	assert.NotNil(suite.T(), err)
+	assert.EqualError(suite.T(), err, "GetEndpoints failed to decode JSON: Unexpected JSON: invalid character ':' after object key:value pair from ")
+	assert.EqualError(suite.T(), errors.Cause(err), "Unexpected JSON: invalid character ':' after object key:value pair from ")
 
 }
 
@@ -210,8 +233,17 @@ func (suite *SessionsTestSuite) TestDeleter() {
 	mockResp := bytes.NewBuffer([]byte(`{"Message": "Test Delete Message"}`))
 	suite.clt.On("Delete", suite.mockURL+"/test").Return(*mockResp, nil)
 
-	resp := suite.mockSession.deleter("test")
+	resp, _ := suite.mockSession.deleter("test")
 	assert.Equal(suite.T(), "Test Delete Message", resp.(string))
+}
+
+func (suite *SessionsTestSuite) TestDeleterJSONError() {
+
+	mockResp := bytes.NewBuffer([]byte(`{"Message": }`))
+	suite.clt.On("Delete", suite.mockURL+"/test").Return(*mockResp, nil)
+
+	_, err := suite.mockSession.deleter("test")
+	assert.Equal(suite.T(), "Unexpected JSON: invalid character '}' looking for beginning of value from ", errors.Cause(err).Error())
 }
 
 func (suite *SessionsTestSuite) TestDeleteEndpoints() {

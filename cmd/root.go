@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"log"
+
 	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
 	"github.com/spf13/cobra"
 )
@@ -39,7 +41,7 @@ var rootCmd = &cobra.Command{
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		panic(err)
+		log.Fatalf("failed to execute command %v", err)
 	}
 
 }
