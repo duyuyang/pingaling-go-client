@@ -12,6 +12,9 @@ $ go get -d bitbucket.org/pingaling-monitoring/client
 $ cd $GOPATH/src/bitbucket.org/pingaling-monitoring/client
 ```
 
+This project use [dep](https://github.com/golang/dep) to manage dependencies.
+Run `dep ensure` to add new dependencies.
+
 ## CMD document
 
 * [pingaling](doc/pingaling.md) - command line user guide
