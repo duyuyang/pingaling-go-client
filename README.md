@@ -10,14 +10,19 @@
 ```shell
 $ go get -d bitbucket.org/pingaling-monitoring/client
 $ cd $GOPATH/src/bitbucket.org/pingaling-monitoring/client
-$ go get ./...              # install dependencies
-$ go build -o pingaling .   # build binary
 ```
 
 ## CMD document
 
 * [pingaling](doc/pingaling.md) - command line user guide
 
+## Build binary
+
+```shell
+$ go build -o pingaling .
+$ mv pingaling /usr/local/bin/
+$ pingaling -h
+```
 
 ## Troubleshooting
 
