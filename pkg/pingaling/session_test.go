@@ -28,6 +28,14 @@ import (
 
 const MockURL = "http://localhost/api"
 
+func (f Fake) Marshal(v interface{}) ([]byte, error) {
+	return nil, errors.New("blah")
+}
+
+func (f Fake) JSONDecoder(b bytes.Buffer, into interface{}) error {
+	return errors.New("blah")
+}
+
 type SessionsTestSuite struct {
 	suite.Suite
 	clt         *mocks.HTTPService
@@ -86,6 +94,33 @@ func (suite *SessionsTestSuite) TestGetHealthStatus() {
 
 }
 
+func (suite *SessionsTestSuite) TestGetHealthStatusGetError() {
+
+	suite.clt.On("Get", suite.mockURL+"/health/summary").Return(bytes.Buffer{}, errors.New("blah"))
+
+	_, err := suite.mockSession.GetHealthStatus()
+	assert.EqualError(suite.T(), err, "GetHealthStatus Get request failed: blah")
+
+}
+
+func (suite *SessionsTestSuite) TestGetHealthStatusJSONError() {
+
+	fake := Fake{}
+	sessJSONDecoder = fake.JSONDecoder
+	mockResp := bytes.NewBuffer([]byte(`{}`))
+
+	suite.clt.On("Get", suite.mockURL+"/health/summary").Return(*mockResp, nil)
+
+	_, err := suite.mockSession.GetHealthStatus()
+
+	assert.NotNil(suite.T(), err)
+	assert.EqualError(suite.T(), err, "GetHealthStatus failed to decode JSON: blah")
+
+	//clean up
+	sessJSONDecoder = JSONDecoder
+
+}
+
 func (suite *SessionsTestSuite) TestGetEndpoints() {
 
 	mockResp := bytes.NewBuffer([]byte(`
@@ -107,25 +142,30 @@ func (suite *SessionsTestSuite) TestGetEndpoints() {
 
 }
 
+func (suite *SessionsTestSuite) TestGetEndpointsGetError() {
+
+	suite.clt.On("Get", suite.mockURL+"/endpoints/my-service21").Return(bytes.Buffer{}, errors.New("blah"))
+
+	_, err := suite.mockSession.GetEndpoints("my-service21")
+	assert.EqualError(suite.T(), err, "GetEndpoint Get request failed: blah")
+
+}
+
 func (suite *SessionsTestSuite) TestGetEndpointsJSONError() {
 
-	mockResp := bytes.NewBuffer([]byte(`
-	{
-		"data": {
-			"url": "https://service.svc.local/healthz",
-			"next_check": null,
-			"name":
-			"description":
-		}
-	}`))
+	fake := Fake{}
+	sessJSONDecoder = fake.JSONDecoder
+	mockResp := bytes.NewBuffer([]byte(`{}`))
 
 	suite.clt.On("Get", suite.mockURL+"/endpoints/my-service21").Return(*mockResp, nil)
 
 	_, err := suite.mockSession.GetEndpoints("my-service21")
 
 	assert.NotNil(suite.T(), err)
-	assert.EqualError(suite.T(), err, "GetEndpoints failed to decode JSON: Unexpected JSON: invalid character ':' after object key:value pair from ")
-	assert.EqualError(suite.T(), errors.Cause(err), "Unexpected JSON: invalid character ':' after object key:value pair from ")
+	assert.EqualError(suite.T(), err, "GetEndpoints failed to decode JSON: blah")
+
+	//clean up
+	sessJSONDecoder = JSONDecoder
 
 }
 
@@ -299,4 +339,40 @@ func (suite *SessionsTestSuite) TestApplyManifest() {
 	assert.Equal(suite.T(), b.String(), "\n\t{\n\t\t\"name\": \"periodic-yak-shaver\",\n\t\t\"description\": null\n\t}")
 	assert.Nil(suite.T(), err)
 
+}
+
+func (suite *SessionsTestSuite) TestApplyManifestMarshalError() {
+	fake := Fake{}
+	jsonMarshal = fake.Marshal
+	docData := bytes.NewBuffer([]byte(`
+	{		
+		"spec": {
+			"name": "periodic-yak-shaver",
+			"alert_without_success": {
+				"minutes": 3
+			}
+		},
+		"kind": "checks/cronjob",
+		"apiVersion": 1
+	}`))
+
+	mockResp := bytes.NewBuffer([]byte(`
+	{
+		"name": "periodic-yak-shaver",
+		"description": null
+	}`))
+
+	var doc TypeMeta
+	JSONDecoder(*docData, doc)
+	manifest := ManifestReq{
+		Manifest: doc,
+	}
+	buff, _ := json.Marshal(&manifest)
+
+	suite.clt.On("Post", suite.mockURL+"/manifest", bytes.NewBuffer(buff)).Return(*mockResp, nil)
+	b, err := suite.mockSession.ApplyManifest(doc)
+	assert.Equal(suite.T(), b.String(), "")
+	assert.EqualError(suite.T(), errors.Cause(err), "Unexpected JSON: blah from ")
+	// clean up
+	jsonMarshal = json.Marshal
 }

@@ -20,6 +20,7 @@ type createSessionResp struct {
 	Timestamp string `json:"timestamp"`
 }
 
+// Health status struct
 type Health struct {
 	URL     string `json:"url"`
 	Updated string `json:"updated"`
@@ -28,10 +29,12 @@ type Health struct {
 	Name    string `json:"name"`
 }
 
+// HealthData list of Health status
 type HealthData struct {
 	Data []Health `json:"data"`
 }
 
+// Endpoint healthcheck point
 type Endpoint struct {
 	URL         string `json:"url"`
 	NextCheck   string `json:"next_check"`
@@ -39,10 +42,12 @@ type Endpoint struct {
 	Description string `json:"description"`
 }
 
+// EndpointData list of healthcheck endpoint
 type EndpointData struct {
 	Data Endpoint `json:"data"`
 }
 
+// Incident describes incident data
 type Incident struct {
 	URL         string `json:"url"`
 	UpdatedAt   string `json:"updated_at"`
@@ -52,20 +57,24 @@ type Incident struct {
 	ID          int    `json:"id"`
 }
 
+// IncidentData describes list of incidents
 type IncidentData struct {
 	Data []Incident `json:"data"`
 }
 
+// NotificationChannel describes alert toolings
 type NotificationChannel struct {
 	UpdatedAt string `json:"updated_at"`
 	Type      string `json:"type"`
 	Name      string `json:"name"`
 }
 
+// NotificationChannelData describes list of alert toolings
 type NotificationChannelData struct {
 	Data []NotificationChannel `json:"data"`
 }
 
+// NotificationPolicy describes how alerts notify user
 type NotificationPolicy struct {
 	UpdatedAt string `json:"updated_at"`
 	Type      string `json:"type"`
@@ -74,20 +83,24 @@ type NotificationPolicy struct {
 	Channel   string `json:"channel"`
 }
 
+// NotificationPolicyData describes list of policies
 type NotificationPolicyData struct {
 	Data []NotificationPolicy `json:"data"`
 }
 
+// DeleteMsg returns the response of delete request
 type DeleteMsg struct {
 	Message string `json:"message"`
 }
 
+// TypeMeta describes the manifest specifications
 type TypeMeta struct {
 	APIVersion int                    `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
 	Kind       string                 `json:"kind,omitempty" yaml:"kind,omitempty"`
 	Spec       map[string]interface{} `json:"spec" yaml:"spec"`
 }
 
+// ManifestReq wrap the manifest specification into a post request body
 type ManifestReq struct {
 	Manifest TypeMeta `json:"manifest" yaml:"manifest"`
 }

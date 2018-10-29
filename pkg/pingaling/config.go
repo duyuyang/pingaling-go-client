@@ -21,6 +21,12 @@ import (
 	"github.com/pkg/errors"
 )
 
+// define External functions
+var (
+	ioReadFile     = ioutil.ReadFile
+	cfgYAMLDecoder = YAMLDecoder
+)
+
 // Config is a struct of configuration file data
 type Config struct {
 	CurrentServer string   `json:"current-server" yaml:"current-server"`
@@ -45,10 +51,6 @@ func (c *Config) GetServerURI() string {
 	}
 	return ""
 }
-
-// define External functions
-var ioReadFile = ioutil.ReadFile
-var cfgYAMLDecoder = YAMLDecoder
 
 // NewConfig reads from .pingaling config file, write into Config struct
 func (c *Config) NewConfig(cfgFile string) error {

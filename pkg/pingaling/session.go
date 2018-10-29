@@ -23,13 +23,19 @@ import (
 )
 
 const (
-	Incidents            = "incidents"
-	NotificationChannels = "notification_channels"
-	NotificationPolicies = "notification_policies"
-	Endpoints            = "endpoints"
-	Message              = "Message: "
-	HealthSummary        = "health/summary"
-	Manifest             = "manifest"
+	incidents            = "incidents"
+	notificationChannels = "notification_channels"
+	notificationPolicies = "notification_policies"
+	endpoints            = "endpoints"
+	message              = "Message: "
+	healthSummary        = "health/summary"
+	manifestS            = "manifest"
+)
+
+// external functions
+var (
+	jsonMarshal     = json.Marshal
+	sessJSONDecoder = JSONDecoder
 )
 
 // Session establish connection to API
@@ -48,11 +54,11 @@ func (s *Session) url(endpoint string) string {
 func (s *Session) GetHealthStatus() (*HealthData, error) {
 	var r HealthData
 
-	b, err := s.HTTPService.Get(s.url(HealthSummary))
+	b, err := s.HTTPService.Get(s.url(healthSummary))
 	if err != nil {
 		return nil, errors.Wrap(err, "GetHealthStatus Get request failed")
 	}
-	err = JSONDecoder(b, &r)
+	err = sessJSONDecoder(b, &r)
 	if err != nil {
 		return nil, errors.Wrap(err, "GetHealthStatus failed to decode JSON")
 	}
@@ -66,11 +72,11 @@ func (s *Session) GetEndpoints(epName string) (*EndpointData, error) {
 
 	var r EndpointData
 
-	b, err := s.HTTPService.Get(s.url(Endpoints + "/" + epName))
+	b, err := s.HTTPService.Get(s.url(endpoints + "/" + epName))
 	if err != nil {
 		return nil, errors.Wrap(err, "GetEndpoint Get request failed")
 	}
-	err = JSONDecoder(b, &r)
+	err = sessJSONDecoder(b, &r)
 	if err != nil {
 		return nil, errors.Wrap(err, "GetEndpoints failed to decode JSON")
 	}
@@ -83,11 +89,11 @@ func (s *Session) GetIncidents() (*IncidentData, error) {
 
 	var r IncidentData
 
-	b, err := s.HTTPService.Get(s.url(Incidents))
+	b, err := s.HTTPService.Get(s.url(incidents))
 	if err != nil {
 		return nil, errors.Wrap(err, "GetIncidents Get request failed")
 	}
-	err = JSONDecoder(b, &r)
+	err = sessJSONDecoder(b, &r)
 	if err != nil {
 		return nil, errors.Wrap(err, "GetIncidents failed to decode JSON")
 	}
@@ -100,11 +106,11 @@ func (s *Session) GetNotificationChannels() (*NotificationChannelData, error) {
 
 	var r NotificationChannelData
 
-	b, err := s.HTTPService.Get(s.url(NotificationChannels))
+	b, err := s.HTTPService.Get(s.url(notificationChannels))
 	if err != nil {
 		return nil, errors.Wrap(err, "GetNotificationChannels Get request failed")
 	}
-	err = JSONDecoder(b, &r)
+	err = sessJSONDecoder(b, &r)
 	if err != nil {
 		return nil, errors.Wrap(err, "GetNotificationChannels failed to decode JSON")
 	}
@@ -117,11 +123,11 @@ func (s *Session) GetNotificationPolicies() (*NotificationPolicyData, error) {
 
 	var r NotificationPolicyData
 
-	b, err := s.HTTPService.Get(s.url(NotificationPolicies))
+	b, err := s.HTTPService.Get(s.url(notificationPolicies))
 	if err != nil {
 		return nil, errors.Wrap(err, "GetNotificationPolicies Get request failed")
 	}
-	err = JSONDecoder(b, &r)
+	err = sessJSONDecoder(b, &r)
 	if err != nil {
 		return nil, errors.Wrap(err, "GetNotificationPolicies failed to decode JSON")
 	}
@@ -133,7 +139,7 @@ func (s *Session) GetNotificationPolicies() (*NotificationPolicyData, error) {
 func (s *Session) DeleteEndpoints(name []string) {
 
 	pather := func(i interface{}) interface{} {
-		return Endpoints + "/" + i.(string)
+		return endpoints + "/" + i.(string)
 	}
 	s.deleteIter(pather, name)
 
@@ -143,7 +149,7 @@ func (s *Session) DeleteEndpoints(name []string) {
 func (s *Session) DeleteNotificationChannels(name []string) {
 
 	pather := func(i interface{}) interface{} {
-		return NotificationChannels + "/" + i.(string)
+		return notificationChannels + "/" + i.(string)
 	}
 	s.deleteIter(pather, name)
 
@@ -153,7 +159,7 @@ func (s *Session) DeleteNotificationChannels(name []string) {
 func (s *Session) DeleteNotificationPolicies(name []string) {
 
 	pather := func(i interface{}) interface{} {
-		return NotificationPolicies + "/" + i.(string)
+		return notificationPolicies + "/" + i.(string)
 	}
 	s.deleteIter(pather, name)
 
@@ -163,7 +169,7 @@ func (s *Session) deleteIter(pather func(i interface{}) interface{}, name []stri
 
 	for i := range Map(pather, StrIter(name)) {
 		if m, err := s.deleter(i); err == nil {
-			fmt.Println(Message, m)
+			fmt.Println(message, m)
 		} else {
 			fmt.Printf("Failed to delete %v", i.(string))
 		}
@@ -178,7 +184,7 @@ func (s *Session) deleter(p interface{}) (interface{}, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "deleter Delete request failed")
 	}
-	err = JSONDecoder(b, &r)
+	err = sessJSONDecoder(b, &r)
 	if err != nil {
 		return nil, errors.Wrap(err, "deleter failed to decode JSON")
 	}
@@ -192,14 +198,14 @@ func (s *Session) ApplyManifest(doc TypeMeta) (bytes.Buffer, error) {
 	manifest := ManifestReq{
 		Manifest: doc,
 	}
-	buff, err := json.Marshal(&manifest)
+	buff, err := jsonMarshal(&manifest)
 	if err != nil {
 		return bytes.Buffer{}, &ErrNotExpectedJSON{
 			OriginalBody: string(buff),
 			Err:          err,
 		}
 	}
-	r, err := s.HTTPService.Post(s.url(Manifest), bytes.NewBuffer(buff))
+	r, err := s.HTTPService.Post(s.url(manifestS), bytes.NewBuffer(buff))
 	if err != nil {
 		return bytes.Buffer{}, errors.Wrap(err, "ApplyManifest Post request failed")
 	}

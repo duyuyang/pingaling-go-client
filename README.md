@@ -35,5 +35,4 @@ Bitbucket access 403
 
 ```shell
 $ git config --global url."git@bitbucket.org:".insteadOf "https://bitbucket.org/"
-
 ```
