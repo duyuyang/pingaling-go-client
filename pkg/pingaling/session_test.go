@@ -210,6 +210,33 @@ func (suite *SessionsTestSuite) TestGetIncidents() {
 
 }
 
+func (suite *SessionsTestSuite) TestGetIncidentsGetError() {
+
+	suite.clt.On("Get", suite.mockURL+"/incidents").Return(bytes.Buffer{}, errors.New("blah"))
+
+	_, err := suite.mockSession.GetIncidents()
+	assert.EqualError(suite.T(), err, "GetIncidents Get request failed: blah")
+
+}
+
+func (suite *SessionsTestSuite) TestGetIncidentsJSONError() {
+
+	fake := Fake{}
+	sessJSONDecoder = fake.JSONDecoder
+	mockResp := bytes.NewBuffer([]byte(`{}`))
+
+	suite.clt.On("Get", suite.mockURL+"/incidents").Return(*mockResp, nil)
+
+	_, err := suite.mockSession.GetIncidents()
+
+	assert.NotNil(suite.T(), err)
+	assert.EqualError(suite.T(), err, "GetIncidents failed to decode JSON: blah")
+
+	//clean up
+	sessJSONDecoder = JSONDecoder
+
+}
+
 func (suite *SessionsTestSuite) TestGetNotificationChannels() {
 
 	mockResp := bytes.NewBuffer([]byte(`
@@ -234,6 +261,33 @@ func (suite *SessionsTestSuite) TestGetNotificationChannels() {
 	assert.Equal(suite.T(), reflect.TypeOf(resp).String(), "*pingaling.NotificationChannelData")
 	assert.NotEmpty(suite.T(), resp.Data)
 	assert.Nil(suite.T(), err)
+
+}
+
+func (suite *SessionsTestSuite) TestGetNotificationChannelsGetError() {
+
+	suite.clt.On("Get", suite.mockURL+"/notification_channels").Return(bytes.Buffer{}, errors.New("blah"))
+
+	_, err := suite.mockSession.GetNotificationChannels()
+	assert.EqualError(suite.T(), err, "GetNotificationChannels Get request failed: blah")
+
+}
+
+func (suite *SessionsTestSuite) TestGetNotificationChannelsJSONError() {
+
+	fake := Fake{}
+	sessJSONDecoder = fake.JSONDecoder
+	mockResp := bytes.NewBuffer([]byte(`{}`))
+
+	suite.clt.On("Get", suite.mockURL+"/notification_channels").Return(*mockResp, nil)
+
+	_, err := suite.mockSession.GetNotificationChannels()
+
+	assert.NotNil(suite.T(), err)
+	assert.EqualError(suite.T(), err, "GetNotificationChannels failed to decode JSON: blah")
+
+	//clean up
+	sessJSONDecoder = JSONDecoder
 
 }
 
@@ -268,6 +322,33 @@ func (suite *SessionsTestSuite) TestGetNotificationPolicies() {
 
 }
 
+func (suite *SessionsTestSuite) TestGetNotificationPoliciesGetError() {
+
+	suite.clt.On("Get", suite.mockURL+"/notification_policies").Return(bytes.Buffer{}, errors.New("blah"))
+
+	_, err := suite.mockSession.GetNotificationPolicies()
+	assert.EqualError(suite.T(), err, "GetNotificationPolicies Get request failed: blah")
+
+}
+
+func (suite *SessionsTestSuite) TestGetNotificationPoliciesJSONError() {
+
+	fake := Fake{}
+	sessJSONDecoder = fake.JSONDecoder
+	mockResp := bytes.NewBuffer([]byte(`{}`))
+
+	suite.clt.On("Get", suite.mockURL+"/notification_policies").Return(*mockResp, nil)
+
+	_, err := suite.mockSession.GetNotificationPolicies()
+
+	assert.NotNil(suite.T(), err)
+	assert.EqualError(suite.T(), err, "GetNotificationPolicies failed to decode JSON: blah")
+
+	//clean up
+	sessJSONDecoder = JSONDecoder
+
+}
+
 func (suite *SessionsTestSuite) TestDeleter() {
 
 	mockResp := bytes.NewBuffer([]byte(`{"Message": "Test Delete Message"}`))
@@ -277,18 +358,40 @@ func (suite *SessionsTestSuite) TestDeleter() {
 	assert.Equal(suite.T(), "Test Delete Message", resp.(string))
 }
 
+func (suite *SessionsTestSuite) TestDeleterDeleteError() {
+
+	suite.clt.On("Delete", suite.mockURL+"/test").Return(bytes.Buffer{}, errors.New("blah"))
+
+	_, err := suite.mockSession.deleter("test")
+	assert.EqualError(suite.T(), err, "deleter Delete request failed: blah")
+}
+
 func (suite *SessionsTestSuite) TestDeleterJSONError() {
 
-	mockResp := bytes.NewBuffer([]byte(`{"Message": }`))
+	fake := Fake{}
+	sessJSONDecoder = fake.JSONDecoder
+	mockResp := bytes.NewBuffer([]byte(`{}`))
+
 	suite.clt.On("Delete", suite.mockURL+"/test").Return(*mockResp, nil)
 
 	_, err := suite.mockSession.deleter("test")
-	assert.Equal(suite.T(), "Unexpected JSON: invalid character '}' looking for beginning of value from ", errors.Cause(err).Error())
+	assert.EqualError(suite.T(), err, "deleter failed to decode JSON: blah")
+	assert.EqualError(suite.T(), errors.Cause(err), "blah")
+
+	//clean up
+	sessJSONDecoder = JSONDecoder
 }
 
 func (suite *SessionsTestSuite) TestDeleteEndpoints() {
 	mockResp := bytes.NewBuffer([]byte(`{"Message": "Test Delete Message"}`))
 	suite.clt.On("Delete", suite.mockURL+"/endpoints/foo").Return(*mockResp, nil)
+
+	suite.mockSession.DeleteEndpoints([]string{"foo"})
+}
+
+func (suite *SessionsTestSuite) TestDeleteIterError() {
+
+	suite.clt.On("Delete", suite.mockURL+"/endpoints/foo").Return(bytes.Buffer{}, errors.New("blah"))
 
 	suite.mockSession.DeleteEndpoints([]string{"foo"})
 }
@@ -375,4 +478,33 @@ func (suite *SessionsTestSuite) TestApplyManifestMarshalError() {
 	assert.EqualError(suite.T(), errors.Cause(err), "Unexpected JSON: blah from ")
 	// clean up
 	jsonMarshal = json.Marshal
+}
+
+func (suite *SessionsTestSuite) TestApplyManifestPostError() {
+
+	docData := bytes.NewBuffer([]byte(`
+	{		
+		"spec": {
+			"name": "periodic-yak-shaver",
+			"alert_without_success": {
+				"minutes": 3
+			}
+		},
+		"kind": "checks/cronjob",
+		"apiVersion": 1
+	}`))
+
+	var doc TypeMeta
+	JSONDecoder(*docData, doc)
+	manifest := ManifestReq{
+		Manifest: doc,
+	}
+	buff, _ := json.Marshal(&manifest)
+
+	suite.clt.On("Post", suite.mockURL+"/manifest", bytes.NewBuffer(buff)).Return(bytes.Buffer{}, errors.New("blah"))
+	b, err := suite.mockSession.ApplyManifest(doc)
+	assert.Equal(suite.T(), b.String(), "")
+	assert.EqualError(suite.T(), err, "ApplyManifest Post request failed: blah")
+	assert.EqualError(suite.T(), errors.Cause(err), "blah")
+
 }
