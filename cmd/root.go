@@ -23,7 +23,7 @@ import (
 
 var (
 	cfgFile   string
-	cfgStruct pl.Config
+	cfgStruct = &pl.Config{}
 	session   *pl.Session
 )
 
@@ -55,7 +55,7 @@ func init() {
 func initConfig() {
 
 	// Initiate the Config
-	pl.NewConfig(cfgFile, &cfgStruct)
+	cfgStruct.NewConfig(cfgFile)
 
 	// Initiate the Client session
 	initClient()

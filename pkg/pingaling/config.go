@@ -34,7 +34,7 @@ type Server struct {
 }
 
 // GetServerURI returns the current serverURI
-func (c Config) GetServerURI() string {
+func (c *Config) GetServerURI() string {
 	name := c.CurrentServer
 	servers := c.Servers
 	// TODO: Can use a filter here
@@ -47,7 +47,7 @@ func (c Config) GetServerURI() string {
 }
 
 // NewConfig reads from .pingaling config file, write into Config struct
-func NewConfig(cfgFile string, into interface{}) {
+func (c *Config) NewConfig(cfgFile string) {
 	var (
 		content []byte
 		err     error
@@ -72,8 +72,8 @@ func NewConfig(cfgFile string, into interface{}) {
 		}
 	}
 
-	if err = YAMLDecoder(content, into); err != nil {
-		log.Fatalf("failed to decode YAML: %v, %v", content, err)
+	if err = YAMLDecoder(content, c); err != nil {
+		log.Fatalf("failed to decode YAML: %v", err)
 	}
 }
 
