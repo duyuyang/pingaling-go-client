@@ -55,7 +55,10 @@ func init() {
 func initConfig() {
 
 	// Initiate the Config
-	cfgStruct.NewConfig(cfgFile)
+	err := cfgStruct.NewConfig(cfgFile)
+	if err != nil {
+		log.Fatalf("failed to initiate config %v", err)
+	}
 
 	// Initiate the Client session
 	initClient()

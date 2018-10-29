@@ -16,9 +16,9 @@ package pingaling
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
-	"runtime"
+
+	"github.com/pkg/errors"
 )
 
 // Config is a struct of configuration file data
@@ -46,8 +46,12 @@ func (c *Config) GetServerURI() string {
 	return ""
 }
 
+// define External functions
+var ioReadFile = ioutil.ReadFile
+var cfgYAMLDecoder = YAMLDecoder
+
 // NewConfig reads from .pingaling config file, write into Config struct
-func (c *Config) NewConfig(cfgFile string) {
+func (c *Config) NewConfig(cfgFile string) error {
 	var (
 		content []byte
 		err     error
@@ -55,35 +59,25 @@ func (c *Config) NewConfig(cfgFile string) {
 
 	if cfgFile != "" {
 		// Use config file from the flag.
-		content, err = ioutil.ReadFile(cfgFile)
+		content, err = ioReadFile(cfgFile)
 		if err != nil {
-			log.Fatalf("failed to read config file: %v, %v", cfgFile, err)
+			return errors.Wrapf(err, "failed to read config: %v", cfgFile)
 		}
 
 	} else {
 		// Find home directory.
-		//home, err := homedir.Dir()
-		home := homeDir()
+		home := os.Getenv("HOME")
 
 		// Search config in home directory with name ".pingaling".
-		content, err = ioutil.ReadFile(home + "/.pingaling")
+		content, err = ioReadFile(home + "/.pingaling")
 		if err != nil {
-			log.Fatalf("failed to read config file: %v, %v", home+"/.pingaling", err)
+			return errors.Wrapf(err, "failed to read config %v", home+"/.pingaling")
 		}
 	}
 
-	if err = YAMLDecoder(content, c); err != nil {
-		log.Fatalf("failed to decode YAML: %v", err)
+	if err = cfgYAMLDecoder(content, c); err != nil {
+		return errors.Wrap(err, "failed to decode config")
 	}
-}
 
-func homeDir() string {
-	if runtime.GOOS == "windows" {
-		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
-		if home == "" {
-			home = os.Getenv("USERPROFILE")
-		}
-		return home
-	}
-	return os.Getenv("HOME")
+	return nil
 }
