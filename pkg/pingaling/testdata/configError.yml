@@ -1,0 +1,4 @@
+---
+servers:
+- server: http://localhost:4000/api
+current-server:

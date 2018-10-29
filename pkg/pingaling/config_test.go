@@ -68,3 +68,12 @@ func TestNewConfig(t *testing.T) {
 	assert.Equal(t, "localhost", cfgStruct.CurrentServer)
 
 }
+
+func TestNewConfigDecoderError(t *testing.T) {
+	cfgFile := filepath.Join("testdata", "configError.yml")
+
+	var cfgStruct Config
+
+	cfgStruct.NewConfig(cfgFile)
+	assert.Equal(t, "", cfgStruct.CurrentServer)
+}
