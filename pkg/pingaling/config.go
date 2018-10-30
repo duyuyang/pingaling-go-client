@@ -16,9 +16,15 @@ package pingaling
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
-	"runtime"
+
+	"github.com/pkg/errors"
+)
+
+// define External functions
+var (
+	ioReadFile     = ioutil.ReadFile
+	cfgYAMLDecoder = YAMLDecoder
 )
 
 // Config is a struct of configuration file data
@@ -34,7 +40,7 @@ type Server struct {
 }
 
 // GetServerURI returns the current serverURI
-func (c Config) GetServerURI() string {
+func (c *Config) GetServerURI() string {
 	name := c.CurrentServer
 	servers := c.Servers
 	// TODO: Can use a filter here
@@ -47,7 +53,7 @@ func (c Config) GetServerURI() string {
 }
 
 // NewConfig reads from .pingaling config file, write into Config struct
-func NewConfig(cfgFile string, into interface{}) {
+func (c *Config) NewConfig(cfgFile string) error {
 	var (
 		content []byte
 		err     error
@@ -55,35 +61,25 @@ func NewConfig(cfgFile string, into interface{}) {
 
 	if cfgFile != "" {
 		// Use config file from the flag.
-		content, err = ioutil.ReadFile(cfgFile)
+		content, err = ioReadFile(cfgFile)
 		if err != nil {
-			log.Fatalf("failed to read config file: %v, %v", cfgFile, err)
+			return errors.Wrapf(err, "failed to read config: %v", cfgFile)
 		}
 
 	} else {
 		// Find home directory.
-		//home, err := homedir.Dir()
-		home := homeDir()
+		home := os.Getenv("HOME")
 
 		// Search config in home directory with name ".pingaling".
-		content, err = ioutil.ReadFile(home + "/.pingaling")
+		content, err = ioReadFile(home + "/.pingaling")
 		if err != nil {
-			log.Fatalf("failed to read config file: %v, %v", home+"/.pingaling", err)
+			return errors.Wrapf(err, "failed to read config %v", home+"/.pingaling")
 		}
 	}
 
-	if err = YAMLDecoder(content, into); err != nil {
-		log.Fatalf("failed to decode YAML: %v, %v", content, err)
+	if err = cfgYAMLDecoder(content, c); err != nil {
+		return errors.Wrap(err, "failed to decode config")
 	}
-}
 
-func homeDir() string {
-	if runtime.GOOS == "windows" {
-		home := os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
-		if home == "" {
-			home = os.Getenv("USERPROFILE")
-		}
-		return home
-	}
-	return os.Getenv("HOME")
+	return nil
 }

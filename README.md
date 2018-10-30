@@ -4,6 +4,8 @@
 [![codecov](https://codecov.io/bb/pingaling-monitoring/client/branch/master/graph/badge.svg)](https://codecov.io/bb/pingaling-monitoring/client)
 [![ci](https://img.shields.io/bitbucket/pipelines/pingaling-monitoring/client.svg)](https://bitbucket.org/pingaling-monitoring/client/addon/pipelines/home#!/)
 [![Go Report Card](https://goreportcard.com/badge/bitbucket.org/pingaling-monitoring/client)](https://goreportcard.com/report/bitbucket.org/pingaling-monitoring/client)
+[![Apache V2 License](https://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://bitbucket.org/pingaling-monitoring/client/src/master/LICENSE)
+
 
 ## To start developing
 
@@ -33,5 +35,4 @@ Bitbucket access 403
 
 ```shell
 $ git config --global url."git@bitbucket.org:".insteadOf "https://bitbucket.org/"
-
 ```
