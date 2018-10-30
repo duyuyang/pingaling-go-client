@@ -27,6 +27,13 @@ import (
 
 const separator = "---"
 
+// external functions
+var (
+	decoYAMLtoJSON    = yaml.YAMLToJSON
+	decoJSONUnmarshal = json.Unmarshal
+	decoYAMLUnmarshal = yaml.Unmarshal
+)
+
 // Reader interface for Read()
 type Reader interface {
 	Read() ([]byte, error)
@@ -118,7 +125,7 @@ func SplitYAMLDocuments(ymlBytes []byte) ([]TypeMeta, error) {
 		}
 		// Deserialize the TypeMeta information of this byte slice
 
-		if err := yaml.Unmarshal(b, &typeMetaInfo); err != nil {
+		if err := decoYAMLUnmarshal(b, &typeMetaInfo); err != nil {
 			return nil, &ErrNotExpectedYAML{
 				OriginalBody: string(b),
 				Err:          err,
@@ -132,14 +139,14 @@ func SplitYAMLDocuments(ymlBytes []byte) ([]TypeMeta, error) {
 
 // YAMLDecoder unmarshal []byte to struct
 func YAMLDecoder(b []byte, into interface{}) error {
-	toJSON, err := yaml.YAMLToJSON(b)
+	toJSON, err := decoYAMLtoJSON(b)
 	if err != nil {
 		return &ErrNotExpectedYAML{
 			OriginalBody: string(b),
 			Err:          err,
 		}
 	}
-	err = json.Unmarshal(toJSON, into)
+	err = decoJSONUnmarshal(toJSON, into)
 	if err != nil {
 		return &ErrNotExpectedJSON{
 			OriginalBody: string(b),
