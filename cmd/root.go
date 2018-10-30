@@ -21,11 +21,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const version = "0.5.0"
+
 var (
 	cfgFile   string
 	cfgStruct = &pl.Config{}
 	session   *pl.Session
-	version   = "0.5.0"
 )
 
 // rootCmd represents the base command when called without any subcommands
