@@ -29,7 +29,7 @@ var versionCmd = &cobra.Command{
   pingaling version
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("0.5.0")
+		fmt.Println(version)
 	},
 }
 

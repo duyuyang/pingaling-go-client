@@ -25,12 +25,14 @@ var (
 	cfgFile   string
 	cfgStruct = &pl.Config{}
 	session   *pl.Session
+	version   = "0.5.0"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "pingaling",
-	Short: "Monitoring all the things",
+	Use:     "pingaling",
+	Version: version,
+	Short:   "Monitoring all the things",
 	Long: `Pingaling CLI is a tool to setup your monitoring needs. For example:
  Get monitoring endpoins from command line
  Set up monitoring for cronjob from command line
