@@ -1,6 +1,10 @@
 # OSX leaves these everywhere on SMB shares
 ._*
 
+# Don't include the binaries
+pingaling
+client
+
 # OSX trash
 .DS_Store
 
