@@ -19,10 +19,14 @@ import (
 	"os"
 	"strings"
 	"text/tabwriter"
+	"time"
 )
 
 func FormatDate(date string) string {
-	return date
+	outputFormat := "02 Jan 2006 15:04"
+	dateTime, _ := time.Parse(time.RFC3339, date)
+
+	return dateTime.Format(outputFormat)
 }
 
 func FormatUrl(url string) string {
