@@ -1,6 +1,9 @@
 package pingaling
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 // Incident describes incident data
 type Incident struct {
@@ -19,8 +22,8 @@ type IncidentData struct {
 
 func FormatIncidents(incidents []Incident) FormattedData {
 	headers := []string{
-		"Name",
 		"Id",
+		"Name",
 		"Status",
 		"Updated At",
 		"Next Attempt",
@@ -31,8 +34,8 @@ func FormatIncidents(incidents []Incident) FormattedData {
 
 	for _, incident := range incidents {
 		row := []string{
+			strconv.Itoa(incident.ID),
 			incident.Name,
-			string(incident.ID),
 			incident.Status,
 			FormatDate(incident.UpdatedAt),
 			FormatDate(incident.NextAttempt),
