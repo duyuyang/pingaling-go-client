@@ -17,73 +17,41 @@ package pingaling
 import (
 	"fmt"
 	"os"
+	"strings"
 	"text/tabwriter"
 )
 
-// TableHealth format the health data to print
-func TableHealth(h []Health) {
+func FormatDate(date string) string {
+	return date
+}
 
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 8, 8, 2, '\t', 0)
-	defer w.Flush()
-
-	fmt.Fprintf(w, "\n%s\t%s\t%s\t%s", "# Name", "# TYPE", "# STATUS", "# URL")
-
-	for _, v := range h {
-		fmt.Fprintf(w, "\n%v\t%v\t%v\t\"%v\"", v.Name, v.Type, v.Status, v.URL)
+func FormatUrl(url string) string {
+	if url == "" {
+		return "N/A"
 	}
+	return url
 }
 
-// TableEndpoints format the Endpoints data to print
-func TableEndpoints(ep Endpoint) {
-
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 8, 8, 2, '\t', 0)
-	defer w.Flush()
-
-	fmt.Fprintf(w, "\n%s\t%s\t%s\t%s", "# Name", "# Next Check", "# URL", "# DESCRIPTION")
-	fmt.Fprintf(w, "\n%v\t%v\t%v\t\"%v\"", ep.Name, ep.NextCheck, ep.URL, ep.Description)
-
-}
-
-// TableIncidents format the health data to print
-func TableIncidents(ins []Incident) {
-
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 8, 8, 2, '\t', 0)
-	defer w.Flush()
-
-	fmt.Fprintf(w, "\n%s\t%s\t%s\t%s\t%s\t%s", "# Name", "# ID", "# STATUS", "# UPDATE AT", "# NEXT ATTEMPT", "# URL")
-
-	for _, v := range ins {
-		fmt.Fprintf(w, "\n%v\t%v\t%v\t%v\t%v\t\"%v\"", v.Name, v.ID, v.Status, v.UpdatedAt, v.NextAttempt, v.URL)
+func formatHeaders(headers []string) string {
+	for index, header := range headers {
+		headers[index] = "# " + strings.ToUpper(header)
 	}
+	return strings.Join(headers, "\t")
 }
 
-// TableNotificationChannels format the health data to print
-func TableNotificationChannels(ncs []NotificationChannel) {
-
+// Prints a table to the console
+// Parameters
+//	headers: slice of strings to use as column headers
+//	rows: slice of tab-delimited strings to use as row data
+func PrintTable(data FormattedData) {
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 8, 8, 2, '\t', 0)
 	defer w.Flush()
 
-	fmt.Fprintf(w, "\n%s\t%s\t%s", "# Name", "# TYPE", "# UPDATED AT")
-
-	for _, v := range ncs {
-		fmt.Fprintf(w, "\n%v\t%v\t%v", v.Name, v.Type, v.UpdatedAt)
-	}
-}
-
-// TableNotificationPolicies format the health data to print
-func TableNotificationPolicies(nps []NotificationPolicy) {
-
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 8, 8, 2, '\t', 0)
-	defer w.Flush()
-
-	fmt.Fprintf(w, "\n%s\t%s\t%s\t%s\t%s", "# Name", "# TYPE", "# ENDPOINT", "# CHANNEL", "# UPDATED AT")
-
-	for _, v := range nps {
-		fmt.Fprintf(w, "\n%v\t%v\t%v\t%v\t%v", v.Name, v.Type, v.Endpoint, v.Channel, v.UpdatedAt)
+	for index, row := range data.Rows {
+		if index == 0 {
+			fmt.Fprintf(w, "%s\n", formatHeaders(data.Headers))
+		}
+		fmt.Fprintf(w, "%s\n", row)
 	}
 }
