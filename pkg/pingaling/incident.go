@@ -20,7 +20,7 @@ type IncidentData struct {
 	Data []Incident `json:"data"`
 }
 
-func FormatIncidents(incidents []Incident) FormattedData {
+func (incidentData IncidentData) FormatList() FormattedData {
 	headers := []string{
 		"Id",
 		"Name",
@@ -32,7 +32,7 @@ func FormatIncidents(incidents []Incident) FormattedData {
 
 	data := make([]string, 0)
 
-	for _, incident := range incidents {
+	for _, incident := range incidentData.Data {
 		row := []string{
 			strconv.Itoa(incident.ID),
 			incident.Name,

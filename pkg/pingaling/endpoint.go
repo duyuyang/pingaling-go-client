@@ -17,7 +17,7 @@ type EndpointData struct {
 	Data Endpoint `json:"data"`
 }
 
-func FormatEndpoints(endpoint Endpoint) FormattedData {
+func (endpoint Endpoint) FormatShow() FormattedData {
 	headers := []string{
 		"Name",
 		"Next check",

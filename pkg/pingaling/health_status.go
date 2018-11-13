@@ -18,7 +18,7 @@ type HealthData struct {
 	Data []Health `json:"data"`
 }
 
-func FormatHealthStatus(healthData []Health) FormattedData {
+func (healthData HealthData) FormatList() FormattedData {
 	headers := []string{
 		"Name",
 		"Type",
@@ -27,7 +27,7 @@ func FormatHealthStatus(healthData []Health) FormattedData {
 	}
 
 	data := make([]string, 0)
-	for _, healthStatus := range healthData {
+	for _, healthStatus := range healthData.Data {
 		row := []string{
 			healthStatus.Name,
 			healthStatus.Type,

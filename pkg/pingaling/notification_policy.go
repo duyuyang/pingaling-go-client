@@ -2,7 +2,21 @@ package pingaling
 
 import "strings"
 
-func FormatNotificationPolicy(notificationPolicies []NotificationPolicy) FormattedData {
+// NotificationPolicy describes how alerts notify user
+type NotificationPolicy struct {
+	UpdatedAt string `json:"updated_at"`
+	Type      string `json:"type"`
+	Name      string `json:"name"`
+	Endpoint  string `json:"endpoint"`
+	Channel   string `json:"channel"`
+}
+
+// NotificationPolicyData describes list of policies
+type NotificationPolicyData struct {
+	Data []NotificationPolicy `json:"data"`
+}
+
+func (notificationPolicies NotificationPolicyData) FormatList() FormattedData {
 	headers := []string{
 		"Name",
 		"Type",
@@ -13,7 +27,7 @@ func FormatNotificationPolicy(notificationPolicies []NotificationPolicy) Formatt
 
 	data := make([]string, 0)
 
-	for _, policy := range notificationPolicies {
+	for _, policy := range notificationPolicies.Data {
 		row := []string{
 			policy.Name,
 			policy.Type,

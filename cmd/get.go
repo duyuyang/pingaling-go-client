@@ -49,7 +49,7 @@ var getHealthCmd = &cobra.Command{
 		if h, err := session.GetHealthStatus(); err != nil {
 			log.Fatalf("failed to get health status %v", err)
 		} else {
-			pl.PrintTable(pl.FormatHealthStatus(h.Data))
+			pl.PrintTable(h.FormatList())
 		}
 	},
 }
@@ -72,7 +72,7 @@ var getEndpointCmd = &cobra.Command{
 		if ep, err := session.GetEndpoints(args[0]); err != nil {
 			log.Fatalf("failed to get endpoint %v", err)
 		} else {
-			pl.PrintTable(pl.FormatEndpoints(ep.Data))
+			pl.PrintTable(ep.Data.FormatShow())
 		}
 	},
 }
@@ -90,7 +90,7 @@ var getEndpointsCmd = &cobra.Command{
 		if h, err := session.GetHealthStatus(); err != nil {
 			log.Fatalf("failed to get endpoints %v", err)
 		} else {
-			pl.PrintTable(pl.FormatHealthStatus(h.Data))
+			pl.PrintTable(h.FormatList())
 		}
 	},
 }
@@ -107,7 +107,7 @@ var getIncidentsCmd = &cobra.Command{
 		if i, err := session.GetIncidents(); err != nil {
 			log.Fatalf("failed to get incidents %v", err)
 		} else {
-			pl.PrintTable(pl.FormatIncidents(i.Data))
+			pl.PrintTable(i.FormatList())
 		}
 	},
 }
@@ -127,7 +127,7 @@ var getNotificationChannelsCmd = &cobra.Command{
 		if nc, err := session.GetNotificationChannels(); err != nil {
 			log.Fatalf("failed to get notification channels %v", err)
 		} else {
-			pl.PrintTable(pl.FormatNotificationChannels(nc.Data))
+			pl.PrintTable(nc.FormatList())
 		}
 	},
 }
@@ -147,7 +147,7 @@ var getNotificationPoliciesCmd = &cobra.Command{
 		if np, err := session.GetNotificationPolicies(); err != nil {
 			log.Fatalf("failed to get notification policies %v", err)
 		} else {
-			pl.PrintTable(pl.FormatNotificationPolicy(np.Data))
+			pl.PrintTable(np.FormatList())
 		}
 
 	},
