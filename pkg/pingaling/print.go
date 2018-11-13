@@ -22,6 +22,14 @@ import (
 	"time"
 )
 
+func FormatBool(value bool) string {
+	if value {
+		return "*"
+	} else {
+		return ""
+	}
+}
+
 func FormatDate(date string) string {
 	outputFormat := "02 Jan 2006 15:04"
 	dateTime, _ := time.Parse(time.RFC3339, date)
@@ -57,26 +65,5 @@ func PrintTable(data FormattedData) {
 			fmt.Fprintf(w, "%s\n", formatHeaders(data.Headers))
 		}
 		fmt.Fprintf(w, "%s\n", row)
-	}
-}
-
-func TableServers(servers []Server) {
-
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 8, 8, 2, '\t', 0)
-	defer w.Flush()
-
-	fmt.Fprintf(w, "%s\t%s\t%s\n", "# CURRENT", "# NAME", "# URL")
-
-	for _, server := range servers {
-		fmt.Fprintf(w, "%v\t%v\t%v\n", boolToString(server.Current), server.Name, server.URI)
-	}
-}
-
-func boolToString(value bool) string {
-	if value {
-		return "*"
-	} else {
-		return ""
 	}
 }
