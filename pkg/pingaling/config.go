@@ -35,8 +35,9 @@ type Config struct {
 
 // Server is the API endpoint
 type Server struct {
-	URI  string `json:"server" yaml:"server"`
-	Name string `json:"name" yaml:"name"`
+	URI     string `json:"server" yaml:"server"`
+	Name    string `json:"name" yaml:"name"`
+	Current bool
 }
 
 // GetServerURI returns the current serverURI
@@ -50,6 +51,19 @@ func (c *Config) GetServerURI() string {
 		}
 	}
 	return ""
+}
+
+func (c *Config) ConfiguredServers() []Server {
+	currentServer := c.GetServerURI()
+	servers := c.Servers
+	for index, server := range servers {
+		if server.URI == currentServer {
+			server.Current = true
+			servers[index] = server
+		}
+	}
+
+	return servers
 }
 
 // NewConfig reads from .pingaling config file, write into Config struct

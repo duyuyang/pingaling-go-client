@@ -87,3 +87,24 @@ func TableNotificationPolicies(nps []NotificationPolicy) {
 		fmt.Fprintf(w, "\n%v\t%v\t%v\t%v\t%v", v.Name, v.Type, v.Endpoint, v.Channel, v.UpdatedAt)
 	}
 }
+
+func TableServers(servers []Server) {
+
+	w := new(tabwriter.Writer)
+	w.Init(os.Stdout, 8, 8, 2, '\t', 0)
+	defer w.Flush()
+
+	fmt.Fprintf(w, "%s\t%s\t%s\n", "# CURRENT", "# NAME", "# URL")
+
+	for _, server := range servers {
+		fmt.Fprintf(w, "%v\t%v\t%v\n", boolToString(server.Current), server.Name, server.URI)
+	}
+}
+
+func boolToString(value bool) string {
+	if value {
+		return "*"
+	} else {
+		return ""
+	}
+}

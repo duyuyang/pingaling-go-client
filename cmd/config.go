@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -41,7 +42,16 @@ var currentServerCmd = &cobra.Command{
 	},
 }
 
+var serversCmd = &cobra.Command{
+	Use:     "servers",
+	Short:   "List all servers",
+	Run: func(cmd *cobra.Command, args []string) {
+		pingaling.TableServers(cfgStruct.ConfiguredServers())
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(configCmd)
 	configCmd.AddCommand(currentServerCmd)
+	configCmd.AddCommand(serversCmd)
 }
