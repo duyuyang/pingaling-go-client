@@ -59,3 +59,24 @@ func PrintTable(data FormattedData) {
 		fmt.Fprintf(w, "%s\n", row)
 	}
 }
+
+func TableServers(servers []Server) {
+
+	w := new(tabwriter.Writer)
+	w.Init(os.Stdout, 8, 8, 2, '\t', 0)
+	defer w.Flush()
+
+	fmt.Fprintf(w, "%s\t%s\t%s\n", "# CURRENT", "# NAME", "# URL")
+
+	for _, server := range servers {
+		fmt.Fprintf(w, "%v\t%v\t%v\n", boolToString(server.Current), server.Name, server.URI)
+	}
+}
+
+func boolToString(value bool) string {
+	if value {
+		return "*"
+	} else {
+		return ""
+	}
+}
