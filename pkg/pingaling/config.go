@@ -17,6 +17,7 @@ package pingaling
 import (
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -53,17 +54,33 @@ func (c *Config) GetServerURI() string {
 	return ""
 }
 
-func (c *Config) ConfiguredServers() []Server {
+func (c *Config) ListServers() FormattedData {
 	currentServer := c.GetServerURI()
 	servers := c.Servers
-	for index, server := range servers {
-		if server.URI == currentServer {
-			server.Current = true
-			servers[index] = server
-		}
+	headers := []string {
+		"Current",
+		"Name",
+		"Url",
 	}
 
-	return servers
+	data := make([]string, 0)
+
+	for _, server := range servers {
+		if server.URI == currentServer {
+			server.Current = true
+		}
+		row := []string {
+			FormatBool(server.Current),
+			server.Name,
+			server.URI,
+		}
+		data = append(data, strings.Join(row, "\t"))
+	}
+
+	return FormattedData{
+		Headers: headers,
+		Rows: data,
+	}
 }
 
 // NewConfig reads from .pingaling config file, write into Config struct

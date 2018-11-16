@@ -46,7 +46,7 @@ var serversCmd = &cobra.Command{
 	Use:     "servers",
 	Short:   "List all servers",
 	Run: func(cmd *cobra.Command, args []string) {
-		pingaling.TableServers(cfgStruct.ConfiguredServers())
+		pingaling.PrintTable(cfgStruct.ListServers())
 	},
 }
 

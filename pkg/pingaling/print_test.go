@@ -16,73 +16,22 @@ package pingaling
 
 import "testing"
 
-func TestTableHealth(t *testing.T) {
+func TestPrintTable(t *testing.T) {
 
-	h := []Health{
-		Health{
-			URL:     "http://foo",
-			Updated: "foo",
-			Type:    "foo",
-			Status:  "unhealthy",
-			Name:    "foo",
-		},
-		Health{
-			URL:     "http://bar",
-			Updated: "bar",
-			Type:    "bar",
-			Status:  "healthy",
-			Name:    "bar",
-		},
+	headers := []string{
+		"a",
+		"b",
 	}
 
-	TableHealth(h)
-}
-
-func TestTableEndpoints(t *testing.T) {
-	ep := Endpoint{
-		URL:         "http://foo",
-		NextCheck:   "foo",
-		Name:        "foo",
-		Description: "foo",
-	}
-	TableEndpoints(ep)
-}
-
-func TestTableIncidents(t *testing.T) {
-	ins := []Incident{
-		Incident{
-			URL:         "http://localhost/foo",
-			UpdatedAt:   "foo",
-			Status:      "foo",
-			NextAttempt: "foo",
-			Name:        "foo",
-			ID:          3,
-		},
-	}
-	TableIncidents(ins)
-}
-
-func TestTableNotificationChannels(t *testing.T) {
-	ncs := []NotificationChannel{
-		NotificationChannel{
-			UpdatedAt: "foo",
-			Type:      "foo",
-			Name:      "foo",
-		},
+	data := []string{
+		"some\tdata",
+		"more\tstuff",
 	}
 
-	TableNotificationChannels(ncs)
-}
-
-func TestTableNotificationPolicies(t *testing.T) {
-	nps := []NotificationPolicy{
-		NotificationPolicy{
-			UpdatedAt: "foo",
-			Type:      "foo",
-			Name:      "foo",
-			Endpoint:  "foo",
-			Channel:   "foo",
-		},
+	formattedData := FormattedData{
+		Headers: headers,
+		Rows:    data,
 	}
-	TableNotificationPolicies(nps)
+
+	PrintTable(formattedData)
 }

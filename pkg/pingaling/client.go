@@ -44,7 +44,7 @@ type HTTPService interface {
 
 // CreateSession is a required for further API use.
 func (c *Client) CreateSession() (*Session, error) {
-	var v createSessionResp
+	var v CreateSessionResp
 	return &Session{
 		parent:      c,
 		SessionID:   v.SessionID,
