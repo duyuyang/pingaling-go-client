@@ -121,7 +121,7 @@ func (suite *SessionsTestSuite) TestGetHealthStatusJSONError() {
 
 }
 
-func (suite *SessionsTestSuite) TestGetEndpoints() {
+func (suite *SessionsTestSuite) TestGetEndpoint() {
 
 	mockResp := bytes.NewBuffer([]byte(`
 	{
@@ -135,7 +135,7 @@ func (suite *SessionsTestSuite) TestGetEndpoints() {
 
 	suite.clt.On("Get", suite.mockURL+"/endpoints/my-service21").Return(*mockResp, nil)
 
-	resp, err := suite.mockSession.GetEndpoints("my-service21")
+	resp, err := suite.mockSession.GetEndpoint("my-service21")
 	assert.Equal(suite.T(), reflect.TypeOf(resp).String(), "*pingaling.EndpointData")
 	assert.NotEmpty(suite.T(), resp.Data)
 	assert.Nil(suite.T(), err)
@@ -146,7 +146,7 @@ func (suite *SessionsTestSuite) TestGetEndpointsGetError() {
 
 	suite.clt.On("Get", suite.mockURL+"/endpoints/my-service21").Return(bytes.Buffer{}, errors.New("blah"))
 
-	_, err := suite.mockSession.GetEndpoints("my-service21")
+	_, err := suite.mockSession.GetEndpoint("my-service21")
 	assert.EqualError(suite.T(), err, "GetEndpoint Get request failed: blah")
 
 }
@@ -159,7 +159,7 @@ func (suite *SessionsTestSuite) TestGetEndpointsJSONError() {
 
 	suite.clt.On("Get", suite.mockURL+"/endpoints/my-service21").Return(*mockResp, nil)
 
-	_, err := suite.mockSession.GetEndpoints("my-service21")
+	_, err := suite.mockSession.GetEndpoint("my-service21")
 
 	assert.NotNil(suite.T(), err)
 	assert.EqualError(suite.T(), err, "GetEndpoints failed to decode JSON: blah")

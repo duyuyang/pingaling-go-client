@@ -67,8 +67,24 @@ func (s *Session) GetHealthStatus() (*HealthData, error) {
 
 }
 
-// GetEndpoints return specific endpoint data
-func (s *Session) GetEndpoints(epName string) (*EndpointData, error) {
+// GetEndpoints returns all Endpoints
+func (s *Session) GetEndpoints() (*EndpointsData, error) {
+
+	var r EndpointsData
+
+	b, err := s.HTTPService.Get(s.url(endpoints))
+	if err != nil {
+		return nil, errors.Wrap(err, "GetEndpoints Get request failed")
+	}
+	err = sessJSONDecoder(b, &r)
+	if err != nil {
+		return nil, errors.Wrap(err, "GetEndpoints failed to decode JSON")
+	}
+	return &r, nil
+
+}
+// GetEndpoint return specific endpoint data
+func (s *Session) GetEndpoint(epName string) (*EndpointData, error) {
 
 	var r EndpointData
 

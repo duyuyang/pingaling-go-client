@@ -69,10 +69,10 @@ var getEndpointCmd = &cobra.Command{
   pingaling get endpoint foo-bar`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if ep, err := session.GetEndpoints(args[0]); err != nil {
+		if ep, err := session.GetEndpoint(args[0]); err != nil {
 			log.Fatalf("failed to get endpoint %v", err)
 		} else {
-			pl.PrintTable(ep.Data.FormatShow())
+			pl.PrintTable(ep.FormatShow())
 		}
 	},
 }
@@ -87,7 +87,7 @@ var getEndpointsCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Return health summary for now
-		if h, err := session.GetHealthStatus(); err != nil {
+		if h, err := session.GetEndpoints(); err != nil {
 			log.Fatalf("failed to get endpoints %v", err)
 		} else {
 			pl.PrintTable(h.FormatList())
