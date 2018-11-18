@@ -23,6 +23,7 @@ import (
 )
 
 const (
+	cronjobs             = "cronjobs"
 	incidents            = "incidents"
 	notificationChannels = "notification_channels"
 	notificationPolicies = "notification_policies"
@@ -48,6 +49,40 @@ type Session struct {
 func (s *Session) url(endpoint string) string {
 	u := s.parent.urlBase(endpoint)
 	return u
+}
+
+// GetCronjobs returns all Cronjobs
+func (s *Session) GetCronjobs() (*CronjobsData, error) {
+
+	var r CronjobsData
+
+	b, err := s.HTTPService.Get(s.url(cronjobs))
+	if err != nil {
+		return nil, errors.Wrap(err, "GetCronjobs Get request failed")
+	}
+	err = sessJSONDecoder(b, &r)
+	if err != nil {
+		return nil, errors.Wrap(err, "GetCronjobs failed to decode JSON")
+	}
+	return &r, nil
+
+}
+
+// GetCronjob return specific endpoint data
+func (s *Session) GetCronjob(cronjobName string) (*CronjobData, error) {
+
+	var r CronjobData
+
+	b, err := s.HTTPService.Get(s.url(cronjobs + "/" + cronjobName))
+	if err != nil {
+		return nil, errors.Wrap(err, "GetCronjob Get request failed")
+	}
+	err = sessJSONDecoder(b, &r)
+	if err != nil {
+		return nil, errors.Wrap(err, "GetCronjob failed to decode JSON")
+	}
+	return &r, nil
+
 }
 
 // GetHealthStatus return Health check data
@@ -83,6 +118,7 @@ func (s *Session) GetEndpoints() (*EndpointsData, error) {
 	return &r, nil
 
 }
+
 // GetEndpoint return specific endpoint data
 func (s *Session) GetEndpoint(epName string) (*EndpointData, error) {
 
