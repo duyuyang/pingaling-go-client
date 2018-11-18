@@ -37,6 +37,45 @@ resources.`,
 `,
 }
 
+// getHealthCmd get all cronjobs
+var getCronjobsCmd = &cobra.Command{
+	Use:   "cronjobs",
+	Short: "List all cronjobs",
+	Example: `
+ # list cronjobs status
+ pingaling get cronjobs
+	`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if crons, err := session.GetCronjobs(); err != nil {
+			log.Fatalf("failed to get health status %v", err)
+		} else {
+			pl.PrintTable(crons.FormatList())
+		}
+	},
+}
+
+var getCronjobCmd = &cobra.Command{
+	Use:   "cronjob",
+	Short: "Get specific cronjob",
+	Example: `
+ # get specific cronjobs
+ pingaling get cronjob foo
+	`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("Requires one cronjob resource")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		if cron, err := session.GetCronjob(args[0]); err != nil {
+			log.Fatalf("failed to get health status %v", err)
+		} else {
+			pl.PrintTable(cron.FormatShow())
+		}
+	},
+}
+
 // getHealthCmd represents the health command
 var getHealthCmd = &cobra.Command{
 	Use:   "health",
@@ -69,10 +108,10 @@ var getEndpointCmd = &cobra.Command{
   pingaling get endpoint foo-bar`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if ep, err := session.GetEndpoints(args[0]); err != nil {
+		if ep, err := session.GetEndpoint(args[0]); err != nil {
 			log.Fatalf("failed to get endpoint %v", err)
 		} else {
-			pl.PrintTable(ep.Data.FormatShow())
+			pl.PrintTable(ep.FormatShow())
 		}
 	},
 }
@@ -87,7 +126,7 @@ var getEndpointsCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Return health summary for now
-		if h, err := session.GetHealthStatus(); err != nil {
+		if h, err := session.GetEndpoints(); err != nil {
 			log.Fatalf("failed to get endpoints %v", err)
 		} else {
 			pl.PrintTable(h.FormatList())
@@ -155,6 +194,8 @@ var getNotificationPoliciesCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(getCmd)
+	getCmd.AddCommand(getCronjobsCmd)
+	getCmd.AddCommand(getCronjobCmd)
 	getCmd.AddCommand(getHealthCmd)
 	getCmd.AddCommand(getEndpointCmd)
 	getCmd.AddCommand(getEndpointsCmd)
