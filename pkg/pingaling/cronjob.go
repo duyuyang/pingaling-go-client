@@ -7,7 +7,8 @@ import (
 
 // Cronjob
 type Cronjob struct {
-	Description         string `json:"description"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
 	Name        string `json:"name"`
 }
 
@@ -24,37 +25,41 @@ type CronjobData struct {
 func (cronjobData CronjobsData) FormatList() FormattedData {
 	headers := []string{
 		"Name",
+		"Status",
 		"Description",
 	}
 
 	data := make([]string, 0)
 
 	for _, cronjob := range cronjobData.Data {
-		row := []string {
+		row := []string{
 			cronjob.Name,
+			cronjob.Status,
 			cronjob.Description,
 		}
 
 		data = append(data, strings.Join(row, "\t"))
 	}
 
-	return FormattedData {
+	return FormattedData{
 		Headers: headers,
-		Rows: data,
+		Rows:    data,
 	}
 }
 
 func (cronjobData CronjobData) FormatShow() FormattedData {
 	headers := []string{
 		"Name",
+		"Status",
 		"Description",
 	}
 
 	cronjob := cronjobData.Data
 
 	data := fmt.Sprintf(
-		"%s\t%s",
+		"%s\t%s\t%s",
 		cronjob.Name,
+		cronjob.Status,
 		cronjob.Description,
 	)
 
