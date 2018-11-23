@@ -10,6 +10,7 @@ type Endpoint struct {
 	URL         string `json:"url"`
 	NextCheck   string `json:"next_check"`
 	Name        string `json:"name"`
+	Status      string `json:"status"`
 	Description string `json:"description"`
 }
 
@@ -26,6 +27,7 @@ type EndpointData struct {
 func (endpointData EndpointsData) FormatList() FormattedData {
 	headers := []string{
 		"Name",
+		"Status",
 		"Next check",
 		"Url",
 		"Description",
@@ -34,8 +36,9 @@ func (endpointData EndpointsData) FormatList() FormattedData {
 	data := make([]string, 0)
 
 	for _, endpoint := range endpointData.Data {
-		row := []string {
+		row := []string{
 			endpoint.Name,
+			endpoint.Status,
 			FormatDate(endpoint.NextCheck),
 			endpoint.URL,
 			endpoint.Description,
@@ -44,15 +47,16 @@ func (endpointData EndpointsData) FormatList() FormattedData {
 		data = append(data, strings.Join(row, "\t"))
 	}
 
-	return FormattedData {
+	return FormattedData{
 		Headers: headers,
-		Rows: data,
+		Rows:    data,
 	}
 }
 
 func (endpointData EndpointData) FormatShow() FormattedData {
 	headers := []string{
 		"Name",
+		"Status",
 		"Next check",
 		"Url",
 		"Description",
@@ -61,8 +65,9 @@ func (endpointData EndpointData) FormatShow() FormattedData {
 	endpoint := endpointData.Data
 
 	data := fmt.Sprintf(
-		"%s\t%s\t%s\t%s",
+		"%s\t%s\t%s\t%s\t%s",
 		endpoint.Name,
+		endpoint.Status,
 		FormatDate(endpoint.NextCheck),
 		endpoint.URL,
 		endpoint.Description,
