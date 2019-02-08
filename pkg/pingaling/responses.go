@@ -36,3 +36,80 @@ type TypeMeta struct {
 type ManifestReq struct {
 	Manifest TypeMeta `json:"manifest" yaml:"manifest"`
 }
+
+// NotificationChannel describes alert toolings
+type NotificationChannel struct {
+	UpdatedAt string `json:"updated_at"`
+	Type      string `json:"type"`
+	Name      string `json:"name"`
+}
+
+// NotificationChannelData describes list of alert toolings
+type NotificationChannelData struct {
+	Data []NotificationChannel `json:"data"`
+}
+
+// NotificationPolicy describes how alerts notify user
+type NotificationPolicy struct {
+	UpdatedAt string `json:"updated_at"`
+	Type      string `json:"type"`
+	Name      string `json:"name"`
+	Endpoint  string `json:"endpoint"`
+	Channel   string `json:"channel"`
+}
+
+// NotificationPolicyData describes list of policies
+type NotificationPolicyData struct {
+	Data []NotificationPolicy `json:"data"`
+}
+
+// Incident describes incident data
+type Incident struct {
+	URL         string `json:"url"`
+	UpdatedAt   string `json:"updated_at"`
+	Status      string `json:"status"`
+	NextAttempt string `json:"next_attempt"`
+	Name        string `json:"name"`
+	ID          int    `json:"id"`
+}
+
+// IncidentData describes list of incidents
+type IncidentData struct {
+	Data []Incident `json:"data"`
+}
+
+// Health status struct
+type Health struct {
+	URL     string `json:"url"`
+	Updated string `json:"updated"`
+	Type    string `json:"type"`
+	Status  string `json:"status"`
+	Name    string `json:"name"`
+}
+
+// HealthData list of Health status
+type HealthData struct {
+	Data []Health `json:"data"`
+}
+
+type FormattedData struct {
+	Headers []string
+	Rows    []string
+}
+
+// Cronjob
+type Cronjob struct {
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	Name        string `json:"name"`
+}
+
+// CronjobsData list of cronjobs
+type CronjobsData struct {
+	Data []Cronjob `json:"data"`
+}
+
+// CronjobData single cronjob
+type CronjobData struct {
+	Data Cronjob `json:"data"`
+}
