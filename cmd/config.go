@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
+	"github.com/duyuyang/pingaling-go-client/pkg/pingaling"
 	"fmt"
 
 	"github.com/spf13/cobra"

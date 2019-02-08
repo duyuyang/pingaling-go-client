@@ -1,17 +1,17 @@
 # Pingaling go-client
 
-[![GoDoc](https://godoc.org/bitbucket.org/pingaling-monitoring/client/pkg/pingaling?status.svg)](https://godoc.org/bitbucket.org/pingaling-monitoring/client/pkg/pingaling)
+[![GoDoc](https://godoc.org/github.com/duyuyang/pingaling-go-client/pkg/pingaling?status.svg)](https://godoc.org/github.com/duyuyang/pingaling-go-client/pkg/pingaling)
 [![codecov](https://codecov.io/bb/pingaling-monitoring/client/branch/master/graph/badge.svg)](https://codecov.io/bb/pingaling-monitoring/client)
-[![ci](https://img.shields.io/bitbucket/pipelines/pingaling-monitoring/client.svg)](https://bitbucket.org/pingaling-monitoring/client/addon/pipelines/home#!/)
-[![Go Report Card](https://goreportcard.com/badge/bitbucket.org/pingaling-monitoring/client)](https://goreportcard.com/report/bitbucket.org/pingaling-monitoring/client)
-[![Apache V2 License](https://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://bitbucket.org/pingaling-monitoring/client/src/master/LICENSE)
+[![ci](https://img.shields.io/bitbucket/pipelines/pingaling-monitoring/client.svg)](https://github.com/duyuyang/pingaling-go-client/addon/pipelines/home#!/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/duyuyang/pingaling-go-client)](https://goreportcard.com/report/github.com/duyuyang/pingaling-go-client)
+[![Apache V2 License](https://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://github.com/duyuyang/pingaling-go-client/src/master/LICENSE)
 
 
 ## To start developing
 
 ```shell
-$ go get -d bitbucket.org/pingaling-monitoring/client
-$ cd $GOPATH/src/bitbucket.org/pingaling-monitoring/client
+$ go get -d github.com/duyuyang/pingaling-go-client
+$ cd $GOPATH/src/github.com/duyuyang/pingaling-go-client
 ```
 
 This project use [dep](https://github.com/golang/dep) to manage dependencies.

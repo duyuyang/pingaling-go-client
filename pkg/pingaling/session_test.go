@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"testing"
 
-	"bitbucket.org/pingaling-monitoring/client/pkg/pingaling/mocks"
+	"github.com/duyuyang/pingaling-go-client/pkg/pingaling/mocks"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"

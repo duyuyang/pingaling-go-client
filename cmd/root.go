@@ -17,7 +17,7 @@ package cmd
 import (
 	"log"
 
-	pl "bitbucket.org/pingaling-monitoring/client/pkg/pingaling"
+	pl "github.com/duyuyang/pingaling-go-client/pkg/pingaling"
 	"github.com/spf13/cobra"
 )
 

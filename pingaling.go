@@ -14,7 +14,7 @@
 
 package main
 
-import "bitbucket.org/pingaling-monitoring/client/cmd"
+import "github.com/duyuyang/pingaling-go-client/cmd"
 
 func main() {
 	//cmd.MakeDoc() //generate markdown doc for cmd tree
