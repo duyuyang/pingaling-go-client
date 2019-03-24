@@ -15,8 +15,9 @@
 package cmd
 
 import (
-	"github.com/duyuyang/pingaling-go-client/pkg/pingaling"
 	"fmt"
+
+	"github.com/yuyangd/pingaling-go-client/pkg/pingaling"
 
 	"github.com/spf13/cobra"
 )
@@ -43,8 +44,8 @@ var currentServerCmd = &cobra.Command{
 }
 
 var serversCmd = &cobra.Command{
-	Use:     "servers",
-	Short:   "List all servers",
+	Use:   "servers",
+	Short: "List all servers",
 	Run: func(cmd *cobra.Command, args []string) {
 		pingaling.PrintTable(cfgStruct.ListServers())
 	},

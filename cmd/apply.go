@@ -19,8 +19,8 @@ import (
 	"io/ioutil"
 	"log"
 
-	pl "github.com/duyuyang/pingaling-go-client/pkg/pingaling"
 	"github.com/spf13/cobra"
+	pl "github.com/yuyangd/pingaling-go-client/pkg/pingaling"
 )
 
 var filename string
